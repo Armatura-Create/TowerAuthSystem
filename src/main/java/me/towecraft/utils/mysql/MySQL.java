@@ -105,9 +105,9 @@ public class MySQL {
                     if (!statement.executeQuery("SELECT * FROM playerdata WHERE uuid like '" + player.getUniqueId().toString() + "';").next()) {
                         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         if (email == null)
-                            statement.executeUpdate("INSERT INTO playerdata (`uuid`, `name`, `reg_ip`, `log_ip`, `password`, `first_login`, `last_login`, `valid`, `server`, `lwlogged`) VALUES('" + player.getUniqueId().toString() + "', '" + player.getName() + "', '" + player.getAddress().getAddress().getHostAddress() + "', '" + player.getAddress().getAddress().getHostAddress() + "', 'null', '" + timestamp.toString() + "', '" + timestamp.toString() + "', '" + valid + "', 'null')");
+                            statement.executeUpdate("INSERT INTO playerdata (`uuid`, `name`, `reg_ip`, `log_ip`, `password`, `first_login`, `last_login`, `valid`) VALUES('" + player.getUniqueId().toString() + "', '" + player.getName() + "', '" + player.getAddress().getAddress().getHostAddress() + "', '" + player.getAddress().getAddress().getHostAddress() + "', 'null', '" + timestamp.toString() + "', '" + timestamp.toString() + "', '" + valid + "')");
                         else
-                            statement.executeUpdate("INSERT INTO playerdata (`uuid`, `name`, `email_user`, `reg_ip`, `log_ip`, `password`, `first_login`, `last_login`, `valid`, `server`, `lwlogged`) VALUES('" + player.getUniqueId().toString() + "', '" + player.getName() + "', '" + email + "', '" + player.getAddress().getAddress().getHostAddress() + "', '" + player.getAddress().getAddress().getHostAddress() + "', 'null', '" + timestamp.toString() + "', '" + timestamp.toString() + "', '" + valid + "', 'null')");
+                            statement.executeUpdate("INSERT INTO playerdata (`uuid`, `name`, `email_user`, `reg_ip`, `log_ip`, `password`, `first_login`, `last_login`, `valid`) VALUES('" + player.getUniqueId().toString() + "', '" + player.getName() + "', '" + email + "', '" + player.getAddress().getAddress().getHostAddress() + "', '" + player.getAddress().getAddress().getHostAddress() + "', 'null', '" + timestamp.toString() + "', '" + timestamp.toString() + "', '" + valid + "')");
                     }
                     return null;
                 });

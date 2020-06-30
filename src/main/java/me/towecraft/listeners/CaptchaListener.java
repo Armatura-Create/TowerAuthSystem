@@ -26,9 +26,7 @@ public class CaptchaListener implements Listener {
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (e.getPlayer() != null && e.getPlayer() instanceof Player && countDoneClick.get(e.getPlayer().getName()) != null && countDoneClick.get(e.getPlayer().getName()) < 3) {
-            TAS.plugin.getPlayerMethods().sendVerifyMSG((Player) e.getPlayer(), false, false);
-        } else if (e.getPlayer() != null && e.getPlayer() instanceof Player) {
-            countDoneClick.remove(e.getPlayer().getName());
+            TAS.plugin.getPlayerMethods().sendVerifyMSG((Player) e.getPlayer(), true, true);
         }
     }
 

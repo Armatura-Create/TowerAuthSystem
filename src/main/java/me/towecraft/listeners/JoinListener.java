@@ -26,6 +26,7 @@ public class JoinListener implements Listener {
         }
 
         if (name.length() >= 3 && name.length() <= 16 && name.matches("^[a-zA-Z0-9_]*") && !name.contains("$") && !name.contains(" ") && !name.contains("-")) {
+            TAS.captchaListener.getCountDoneClick().put(p.getName(), 0);
             TAS.plugin.getPlayerMethods().sendVerifyMSG(p, TAS.plugin.getPlayerDataList().searchPlayer(p.getName()) == null, true);
         } else {
             p.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));

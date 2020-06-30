@@ -23,7 +23,7 @@ public class PlayerMethods {
     }
 
     public void sendVerifyMSG(Player player, boolean isCaptcha, boolean isCheckIp) {
-        if (isCaptcha) {
+        if (isCaptcha && TAS.captchaListener.getCountDoneClick().get(player.getName()) < 3 ) {
             new BukkitRunnable() {
 
                 @Override
@@ -32,7 +32,7 @@ public class PlayerMethods {
                 }
             }.runTaskLater(plugin, 5L);
             return;
-        } else if (isCheckIp) {
+        } else if (isCheckIp && TAS.captchaListener.getCountDoneClick().get(player.getName()) < 3) {
             PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
             if (!playerData.getLog_ip().equals(player.getAddress().getAddress().getHostAddress())) {
                 new BukkitRunnable() {
