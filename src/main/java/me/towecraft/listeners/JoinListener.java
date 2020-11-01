@@ -22,12 +22,7 @@ public class JoinListener implements Listener {
         final String name = p.getName();
 
         if (name.matches("^[А-ЯЁа-яё]*")) {
-            p.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
-//            p.kickPlayer(ChatColor.translateAlternateColorCodes('&',
-//                    " &r&c&lBansystem &r\n"
-//                            + " &r&cYou have been banned for &r\n"
-//                            + " &r&cTime Remaining: &n&r\n"
-//                            + "&r&4Banned by: &l"));
+            p.kickPlayer(ChatColor.translateAlternateColorCodes('&', TAS.files.getMSG().getString("KickMessages.IncorrectName")));
             return;
         }
 
@@ -35,7 +30,7 @@ public class JoinListener implements Listener {
             TAS.captchaListener.getCountDoneClick().put(p.getName(), 0);
             TAS.plugin.getPlayerMethods().sendVerifyMSG(p, TAS.plugin.getPlayerDataList().searchPlayer(p.getName()) == null, true);
         } else {
-            p.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
+            p.kickPlayer(ChatColor.translateAlternateColorCodes('&', TAS.files.getMSG().getString("KickMessages.IncorrectName")));
         }
 
         //TODO Проверка для сессии
