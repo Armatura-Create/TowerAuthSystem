@@ -1,6 +1,7 @@
 package me.towecraft.listeners;
 
 import me.towecraft.TAS;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +23,11 @@ public class JoinListener implements Listener {
 
         if (name.matches("^[А-ЯЁа-яё]*")) {
             p.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
+//            p.kickPlayer(ChatColor.translateAlternateColorCodes('&',
+//                    " &r&c&lBansystem &r\n"
+//                            + " &r&cYou have been banned for &r\n"
+//                            + " &r&cTime Remaining: &n&r\n"
+//                            + "&r&4Banned by: &l"));
             return;
         }
 

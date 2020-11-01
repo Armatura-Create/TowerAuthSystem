@@ -1,6 +1,7 @@
 package me.towecraft;
 
 import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.towecraft.listeners.CaptchaListener;
 import me.towecraft.listeners.JoinListener;
@@ -50,7 +51,7 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
 
     public static CaptchaListener captchaListener;
 
-    public static String nameServer = "Auth-1";
+    public static String nameServer = null;
     public static List<ServerModel> servers;
     public static TAS plugin;
 
@@ -198,6 +199,10 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
                 try {
                     while (true) {
                         Thread.sleep(updateTime); // Update UI in two seconds
+
+                        if (Bukkit.getOnlinePlayers().toArray().length > 0 && nameServer == null)
+                            setCurrentServer();
+
                         if (nameServer != null)
                             TAS.this.mainRunnable.run();
                     }
@@ -250,6 +255,13 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
                 break;
             }
         }
+    }
+
+    public void setCurrentServer() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        Player player = (Player) Bukkit.getOnlinePlayers().toArray()[0];
+        out.writeUTF(player.getName());
+        player.sendPluginMessage(this, "tgs:channel", out.toByteArray());
     }
 
     //-----------------------------CHECK_SERVERS--------------------------------//
