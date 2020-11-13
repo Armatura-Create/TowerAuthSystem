@@ -32,7 +32,5 @@ public class JoinListener implements Listener {
         } else {
             p.kickPlayer(ChatColor.translateAlternateColorCodes('&', TAS.files.getMSG().getString("KickMessages.IncorrectName")));
         }
-
-        //TODO Проверка для сессии
     }
 }

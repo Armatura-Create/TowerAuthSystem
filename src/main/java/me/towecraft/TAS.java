@@ -249,8 +249,9 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
 
                 ServerModel temp = new ServerModel(data[1], data[2], data[3], data[4], Integer.parseInt(data[5]), Integer.parseInt(data[6]));
 
-                if (data[0].equals("server"))
+                if (data[0].equals("server") && temp.getInStatus().equals("online"))
                     servers.add(temp);
+
             } catch (Exception e) {
                 break;
             }
