@@ -63,14 +63,14 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
     @Override
     public void onEnable() {
 
-        SpigotUpdater updater = new SpigotUpdater(this, 76667);
-        try {
-            if (updater.checkForUpdates())
-                log("An update was found! New version: " + updater.getLatestVersion() + " download: " + updater.getResourceURL());
-        } catch (Exception e) {
-            log("Could not check for updates! Stacktrace:");
-            e.printStackTrace();
-        }
+//        SpigotUpdater updater = new SpigotUpdater(this, 76667);
+//        try {
+//            if (updater.checkForUpdates())
+//                log("An update was found! New version: " + updater.getLatestVersion() + " download: " + updater.getResourceURL());
+//        } catch (Exception e) {
+//            log("Could not check for updates! Stacktrace:");
+//            e.printStackTrace();
+//        }
 
         log("Start load");
 

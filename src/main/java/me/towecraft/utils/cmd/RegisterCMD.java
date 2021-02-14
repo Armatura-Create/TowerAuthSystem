@@ -39,6 +39,12 @@ public class RegisterCMD implements CommandExecutor {
                                     sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.wrong"));
                                     return;
                                 }
+
+                                if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])){
+                                    sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.cyrillic_pass"));
+                                    return;
+                                }
+
                                 boolean b2 = true;
                                 for (String s : TAS.files.getMSG().getStringList("BannedPasswords")) {
                                     if (args[0].equals(s)) {
@@ -107,5 +113,13 @@ public class RegisterCMD implements CommandExecutor {
 
     public static boolean checkEmail(String email) {
         return Pattern.compile("(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[A-Za-z0-9-]*[A-Za-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])").matcher(email).matches();
+    }
+
+    public static boolean checkRusSymbol(String pass) {
+        return Pattern.compile("[а-яА-Я]+").matcher(pass).matches();
+    }
+
+    public static boolean checkContainsRusSymbol(String pass) {
+        return Pattern.compile("(?=[а-яА-ЯёЁ]*[a-zA-Z])(?=[a-zA-Z]*[а-яА-ЯёЁ])[\\wа-яА-ЯёЁ]+").matcher(pass).matches();
     }
 }

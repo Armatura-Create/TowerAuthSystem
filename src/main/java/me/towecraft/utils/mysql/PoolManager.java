@@ -20,7 +20,7 @@ public class PoolManager {
 
     public static void connectDB() {
 
-        PoolManager.address = "18.185.135.4";
+        PoolManager.address = "217.24.160.92";
         PoolManager.database = "TowerCraft";
         PoolManager.port = "3306";
         PoolManager.username = Constants.DATA_BASE.user;
