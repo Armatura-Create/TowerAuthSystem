@@ -31,7 +31,7 @@ public class CaptchaTimer {
                 }
             }
         });
-        timers.get(player.getName()).runTaskLater(TAS.plugin, time * 20);
+        timers.get(player.getName()).runTaskLater(TAS.plugin, time * 20L);
     }
 
     public HashMap<String, BukkitRunnable> getTimers() {

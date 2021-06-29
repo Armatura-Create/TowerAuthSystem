@@ -31,7 +31,7 @@ public class LoginTimer {
                 }
             }
         });
-        timers.get(player.getName()).runTaskLater(TAS.plugin, time * 20);
+        timers.get(player.getName()).runTaskLater(TAS.plugin, time * 20L);
 
         player.setLevel(time);
         new BukkitRunnable() {

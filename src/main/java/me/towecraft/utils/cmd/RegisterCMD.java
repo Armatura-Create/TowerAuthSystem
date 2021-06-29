@@ -31,7 +31,7 @@ public class RegisterCMD implements CommandExecutor {
                             if (data) {
                                 sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.exist"));
                             } else {
-                                    if (args.length < 2) {
+                                if (args.length < 2) {
                                     sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.wrong"));
                                     return;
                                 }
@@ -40,7 +40,7 @@ public class RegisterCMD implements CommandExecutor {
                                     return;
                                 }
 
-                                if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])){
+                                if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])) {
                                     sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.cyrillic_pass"));
                                     return;
                                 }
@@ -53,10 +53,12 @@ public class RegisterCMD implements CommandExecutor {
                                         break;
                                     }
                                 }
+
                                 if (args[0].length() < RegisterCMD.this.minPass) {
                                     sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.to_short"));
                                     b2 = false;
                                 }
+
                                 if (args[0].length() > RegisterCMD.this.maxPass) {
                                     sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.to_long"));
                                     b2 = false;
@@ -93,6 +95,7 @@ public class RegisterCMD implements CommandExecutor {
 
                                             @Override
                                             public void error(final Exception ex) {
+                                                ex.printStackTrace();
                                             }
                                         });
                                     }
@@ -102,6 +105,7 @@ public class RegisterCMD implements CommandExecutor {
 
                         @Override
                         public void error(final Exception ex) {
+                            ex.printStackTrace();
                         }
                     });
                 }
@@ -116,10 +120,15 @@ public class RegisterCMD implements CommandExecutor {
     }
 
     public static boolean checkRusSymbol(String pass) {
-        return Pattern.compile("[а-яА-Я]+").matcher(pass).matches();
+        return Pattern.matches(".*\\p{InCyrillic}.*", pass);
     }
 
     public static boolean checkContainsRusSymbol(String pass) {
-        return Pattern.compile("(?=[а-яА-ЯёЁ]*[a-zA-Z])(?=[a-zA-Z]*[а-яА-ЯёЁ])[\\wа-яА-ЯёЁ]+").matcher(pass).matches();
+        for (int i = 0; i < pass.length(); i++) {
+            if (Character.UnicodeBlock.of(pass.charAt(i)).equals(Character.UnicodeBlock.CYRILLIC)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
