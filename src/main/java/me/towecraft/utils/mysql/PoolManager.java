@@ -29,7 +29,7 @@ public class PoolManager {
         PoolManager.size = 10;
 
         final HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + PoolManager.address + ":" + PoolManager.port + "/" + PoolManager.database + "?useSSL=" + PoolManager.ssl);
+        hikariConfig.setJdbcUrl("jdbc:mysql://" + PoolManager.address + ":" + PoolManager.port + "/" + PoolManager.database + "?useSSL=" + PoolManager.ssl + "&characterEncoding=utf8&useConfigs=maxPerformance");
         hikariConfig.setUsername(PoolManager.username);
         hikariConfig.setPassword(PoolManager.password);
         hikariConfig.setMaximumPoolSize(PoolManager.size);

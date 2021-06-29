@@ -35,39 +35,46 @@ public class CaptchaListener implements Listener {
         if (e.getWhoClicked() instanceof Player) {
             final Player player = (Player) e.getWhoClicked();
             e.setCancelled(true);
-            final ItemStack item = e.getInventory().getItem(e.getSlot());
-            if (item == null)
-                countMissClick.merge(player.getName(), 1, Integer::sum);
-            else {
 
-                ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
-                final ItemMeta meta = done.getItemMeta();
-                meta.setDisplayName("§aВыполнено");
-                done.setItemMeta(meta);
-                if (!done.equals(e.getInventory().getItem(e.getSlot()))) {
-                    e.getInventory().setItem(e.getSlot(), done);
-                    countDoneClick.merge(player.getName(), 1, Integer::sum);
-                    if (countDoneClick.get(player.getName()) >= 3) {
-                        player.closeInventory();
-                        TAS.plugin.getPlayerMethods().sendVerifyMSG(player, false, false);
+            if (e.getSlot() >= 0) {
+                final ItemStack item = e.getInventory().getItem(e.getSlot());
+                if (item == null)
+                    countMissClick.merge(player.getName(), 1, Integer::sum);
+                else {
+
+                    ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
+                    final ItemMeta meta = done.getItemMeta();
+                    meta.setDisplayName("§aВыполнено");
+                    done.setItemMeta(meta);
+                    if (!done.equals(e.getInventory().getItem(e.getSlot()))) {
+                        e.getInventory().setItem(e.getSlot(), done);
+                        countDoneClick.merge(player.getName(), 1, Integer::sum);
+                        if (countDoneClick.get(player.getName()) >= 3) {
+                            player.closeInventory();
+                            TAS.plugin.getPlayerMethods().sendVerifyMSG(player, false, false);
+                        }
+                    }
+                    if (TAS.plugin.getTypeCaptcha() == 2 || TAS.plugin.getTypeCaptcha() == 3) {
+                        if (TAS.plugin.getTypeCaptcha() == 3) {
+                            e.getInventory().setItem(e.getSlot(), null);
+                        }
+                        ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+                        final ItemMeta metaClick = itemStackClick.getItemMeta();
+                        metaClick.setDisplayName("§cНажмите на меня");
+                        itemStackClick.setItemMeta(metaClick);
+                        e.getInventory().setItem(TAS.plugin.getPlayerMethods().rnd(0, 53), itemStackClick);
+                        player.updateInventory();
                     }
                 }
-                if (TAS.plugin.getTypeCaptcha() == 2 || TAS.plugin.getTypeCaptcha() == 3) {
-                    if (TAS.plugin.getTypeCaptcha() == 3) {
-                        e.getInventory().setItem(e.getSlot(), null);
-                    }
-                    ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                    final ItemMeta metaClick = itemStackClick.getItemMeta();
-                    metaClick.setDisplayName("§cНажмите на меня");
-                    itemStackClick.setItemMeta(metaClick);
-                    e.getInventory().setItem(TAS.plugin.getPlayerMethods().rnd(0, 53), itemStackClick);
-                    player.updateInventory();
+                if (countMissClick.get(player.getName()) != null && countMissClick.get(player.getName()) > 3) {
+                    player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
+                    countMissClick.remove(player.getName());
                 }
-            }
-            if (countMissClick.get(player.getName()) != null && countMissClick.get(player.getName()) > 3) {
-                player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
+            } else {
+                player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectBot"));
                 countMissClick.remove(player.getName());
             }
+
         }
     }
 

@@ -27,6 +27,14 @@ AutoMessages:
   ServerDown:
     - '§fВы перемещены в Limbo'
 KickMessages:
+  IncorrectBot:
+    '§f
+      §f              §e§lTowerAuthSystem
+
+      §f Вы дЫбил!
+
+      §8'
+
   IncorrectName:
     '§f
     §f              §e§lTowerAuthSystem
