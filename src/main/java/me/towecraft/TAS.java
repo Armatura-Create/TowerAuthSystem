@@ -138,7 +138,7 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
                     sender.sendMessage(getPrefix() + "Не задан сервер");
             return true;
         }
-        sender.sendMessage(getPrefix() + "Команда не найденна");
+        sender.sendMessage(getPrefix() + "Команда не найдена");
         return true;
     }
 

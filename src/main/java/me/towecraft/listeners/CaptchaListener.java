@@ -17,15 +17,23 @@ public class CaptchaListener implements Listener {
     private final HashMap<String, Integer> countMissClick;
     private final HashMap<String, Integer> countDoneClick;
 
+    private final HashMap<String, Integer> fastClick;
+
+    private final HashMap<String, Boolean> isClick;
+
     public CaptchaListener() {
         TAS.registerListener(this);
         countMissClick = new HashMap<>();
         countDoneClick = new HashMap<>();
+        fastClick = new HashMap<>();
+        isClick = new HashMap<>();
     }
 
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
-        if (e.getPlayer() != null && e.getPlayer() instanceof Player && countDoneClick.get(e.getPlayer().getName()) != null && countDoneClick.get(e.getPlayer().getName()) < 3) {
+        if (e.getPlayer() != null && e.getPlayer() instanceof Player &&
+                countDoneClick.get(e.getPlayer().getName()) != null &&
+                countDoneClick.get(e.getPlayer().getName()) < 3) {
             TAS.plugin.getPlayerMethods().sendVerifyMSG((Player) e.getPlayer(), true, true);
         }
     }
@@ -36,45 +44,73 @@ public class CaptchaListener implements Listener {
             final Player player = (Player) e.getWhoClicked();
             e.setCancelled(true);
 
-            if (e.getSlot() >= 0) {
-                final ItemStack item = e.getInventory().getItem(e.getSlot());
-                if (item == null)
-                    countMissClick.merge(player.getName(), 1, Integer::sum);
-                else {
+            isClick.putIfAbsent(player.getName(), false);
 
-                    ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
-                    final ItemMeta meta = done.getItemMeta();
-                    meta.setDisplayName("§aВыполнено");
-                    done.setItemMeta(meta);
-                    if (!done.equals(e.getInventory().getItem(e.getSlot()))) {
-                        e.getInventory().setItem(e.getSlot(), done);
-                        countDoneClick.merge(player.getName(), 1, Integer::sum);
-                        if (countDoneClick.get(player.getName()) >= 3) {
-                            player.closeInventory();
-                            TAS.plugin.getPlayerMethods().sendVerifyMSG(player, false, false);
+            if (!isClick.get(player.getName())) {
+                isClick.put(player.getName(), true);
+                new Thread(() -> {
+                    if (e.getSlot() >= 0) {
+                        final ItemStack item = e.getInventory().getItem(e.getSlot());
+                        if (item == null)
+                            countMissClick.merge(player.getName(), 1, Integer::sum);
+                        else {
+                            ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
+                            final ItemMeta meta = done.getItemMeta();
+                            meta.setDisplayName("§aВыполнено");
+                            done.setItemMeta(meta);
+                            if (!done.equals(e.getInventory().getItem(e.getSlot()))) {
+                                e.getInventory().setItem(e.getSlot(), done);
+                                countDoneClick.merge(player.getName(), 1, Integer::sum);
+                                if (countDoneClick.get(player.getName()) >= 3) {
+                                    player.closeInventory();
+                                    TAS.plugin.getPlayerMethods().sendVerifyMSG(player, false, false);
+                                }
+                            }
+                            if (TAS.plugin.getTypeCaptcha() == 2 || TAS.plugin.getTypeCaptcha() == 3) {
+                                if (TAS.plugin.getTypeCaptcha() == 3) {
+                                    e.getInventory().setItem(e.getSlot(), null);
+                                }
+                                if (countDoneClick.get(player.getName()) == e.getInventory().getContents().length ||
+                                        TAS.plugin.getTypeCaptcha() == 3) {
+                                    ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+                                    final ItemMeta metaClick = itemStackClick.getItemMeta();
+                                    metaClick.setDisplayName("§cНажмите на меня");
+                                    itemStackClick.setItemMeta(metaClick);
+                                    e.getInventory().setItem(TAS.plugin.getPlayerMethods().rnd(0, 53), itemStackClick);
+                                    player.updateInventory();
+                                }
+                            }
                         }
-                    }
-                    if (TAS.plugin.getTypeCaptcha() == 2 || TAS.plugin.getTypeCaptcha() == 3) {
-                        if (TAS.plugin.getTypeCaptcha() == 3) {
-                            e.getInventory().setItem(e.getSlot(), null);
+                        if (countMissClick.get(player.getName()) != null && countMissClick.get(player.getName()) > 3) {
+                            player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
+                            countMissClick.remove(player.getName());
+                            fastClick.remove(player.getName());
+                            isClick.remove(player.getName());
                         }
-                        ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                        final ItemMeta metaClick = itemStackClick.getItemMeta();
-                        metaClick.setDisplayName("§cНажмите на меня");
-                        itemStackClick.setItemMeta(metaClick);
-                        e.getInventory().setItem(TAS.plugin.getPlayerMethods().rnd(0, 53), itemStackClick);
-                        player.updateInventory();
+                        try {
+                            Thread.sleep(120);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        fastClick.put(player.getName(), 0);
+                        isClick.put(player.getName(), false);
+                    } else {
+                        player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectBot"));
+                        countMissClick.remove(player.getName());
+                        fastClick.remove(player.getName());
+                        isClick.remove(player.getName());
                     }
-                }
-                if (countMissClick.get(player.getName()) != null && countMissClick.get(player.getName()) > 3) {
-                    player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectName"));
-                    countMissClick.remove(player.getName());
-                }
+                }).start();
             } else {
-                player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectBot"));
-                countMissClick.remove(player.getName());
-            }
+                fastClick.merge(player.getName(), 1, Integer::sum);
+                if (fastClick.get(player.getName()) > 10) {
+                    player.kickPlayer(TAS.files.getMSG().getString("KickMessages.IncorrectBot"));
+                    countMissClick.remove(player.getName());
+                    fastClick.remove(player.getName());
+                    isClick.remove(player.getName());
+                }
 
+            }
         }
     }
 

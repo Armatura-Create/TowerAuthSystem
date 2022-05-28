@@ -4,12 +4,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.towecraft.utils.Constants;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class PoolManager {
-    private static HikariDataSource hikari;
+    private static DataSource hikari;
     private static String address;
     private static String database;
     private static String port;
@@ -20,7 +21,7 @@ public class PoolManager {
 
     public static void connectDB() {
 
-        PoolManager.address = "217.24.160.92";
+        PoolManager.address = "152.70.52.190";
         PoolManager.database = "TowerCraft";
         PoolManager.port = "3306";
         PoolManager.username = Constants.DATA_BASE.user;
@@ -37,6 +38,7 @@ public class PoolManager {
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
         PoolManager.hikari = new HikariDataSource(hikariConfig);
     }
 
