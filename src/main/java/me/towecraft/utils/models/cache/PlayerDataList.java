@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerDataList {
-    public TAS plugin;
+    public final TAS plugin;
     private final HashMap<String, PlayerData> player;
 
-    public PlayerDataList(final TAS plugin) {
+    public PlayerDataList(TAS plugin) {
         this.plugin = plugin;
         this.player = new HashMap<>();
     }
@@ -45,16 +45,4 @@ public class PlayerDataList {
         }
         return false;
     }
-
-//    public void cleanData() {
-//        plugin.getProxy().getScheduler().schedule(plugin, () -> {
-//            HashSet<String> set = new HashSet<>();
-//            for (Map.Entry<String, PlayerData> entry : this.player.entrySet()) {
-//                if (!entry.getValue().isPlaying()) {
-//                    set.add(entry.getKey());
-//                }
-//            }
-//            this.player.keySet().removeAll(set);
-//        }, 1L, 30, TimeUnit.MINUTES);
-//    }
 }

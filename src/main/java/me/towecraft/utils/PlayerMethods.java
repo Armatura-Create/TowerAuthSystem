@@ -23,7 +23,7 @@ public class PlayerMethods {
     }
 
     public void sendVerifyMSG(Player player, boolean isCaptcha, boolean isCheckIp) {
-        if (isCaptcha && TAS.captchaListener.getCountDoneClick().get(player.getName()) < 3 ) {
+        if (isCaptcha && TAS.captchaListener.getCountDoneClick().get(player.getName()) < 3) {
             new BukkitRunnable() {
 
                 @Override
@@ -34,7 +34,7 @@ public class PlayerMethods {
             return;
         } else if (isCheckIp && TAS.captchaListener.getCountDoneClick().get(player.getName()) < 3) {
             PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
-            if (!playerData.getLog_ip().equals(player.getAddress().getAddress().getHostAddress())) {
+            if (!playerData.getLog_ip().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress())) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -49,7 +49,7 @@ public class PlayerMethods {
             if (playerData != null) {
                 if (playerData.getLog_ip().equals(player.getAddress().getAddress().getHostAddress()) &&
                         playerData.getLast_login().getTime() >= new Timestamp(System.currentTimeMillis()).getTime() - TAS.maxTimeSession) {
-                    pMessage(player, 10);
+                    pMessage(player, TypeMessage.SESSION);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -58,11 +58,11 @@ public class PlayerMethods {
                     }.runTaskLater(plugin, 20L);
 
                 } else {
-                    pMessage(player, 2);
+                    pMessage(player, TypeMessage.LOGIN);
                     plugin.getLoginTimer().logTimer(player);
                 }
             } else {
-                pMessage(player, 3);
+                pMessage(player, TypeMessage.REGISTER);
                 plugin.getRegisterTimer().regTimer(player);
             }
         }
@@ -90,7 +90,7 @@ public class PlayerMethods {
                 for (Integer integer : random) {
                     inventory.setItem(integer, itemStackClick);
                 }
-            } else  {
+            } else {
                 ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
                 final ItemMeta meta = itemStackClick.getItemMeta();
                 meta.setDisplayName("§cНажмите на меня");
@@ -111,23 +111,8 @@ public class PlayerMethods {
         return (int) (Math.random() * ++max) + min;
     }
 
-    public void pMessage(final Player player, final int n) {
-        List<String> listMSG = new ArrayList<>();
-        switch (n) {
-            case 2:
-                listMSG = TAS.files.getMSG().getStringList("AutoMessages.login");
-                break;
-
-            case 3:
-                listMSG = TAS.files.getMSG().getStringList("AutoMessages.register");
-                break;
-
-            case 10:
-                listMSG = TAS.files.getMSG().getStringList("AutoMessages.session");
-                break;
-        }
-
-        for (String temp : listMSG)
+    public void pMessage(Player player, TypeMessage message) {
+        for (String temp : TAS.files.getMSG().getStringList( message.getPath()))
             player.sendMessage(temp);
     }
 }

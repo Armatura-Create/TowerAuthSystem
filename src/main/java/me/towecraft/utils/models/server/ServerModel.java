@@ -1,5 +1,11 @@
-package me.towecraft.utils.models;
+package me.towecraft.utils.models.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServerModel {
     private String name;
     private String group;
@@ -7,17 +13,6 @@ public class ServerModel {
     private int nowPlayer;
     private String inGame;
     private String map;
-
-    public ServerModel() {}
-
-    public ServerModel(String name, String group, String map, String inGame, int nowPlayer, int maxPlayers) {
-        this.name = name;
-        this.group = group;
-        this.maxPlayers = maxPlayers;
-        this.nowPlayer = nowPlayer;
-        this.inGame = inGame;
-        this.map = map;
-    }
 
     public String getName() {
         return name;

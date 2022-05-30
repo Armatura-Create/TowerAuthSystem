@@ -1,5 +1,6 @@
 package me.towecraft;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -7,11 +8,11 @@ import me.towecraft.listeners.CaptchaListener;
 import me.towecraft.listeners.JoinListener;
 import me.towecraft.utils.Files;
 import me.towecraft.utils.PlayerMethods;
-import me.towecraft.utils.SpigotUpdater;
 import me.towecraft.utils.cmd.LoginCMD;
 import me.towecraft.utils.cmd.RegisterCMD;
-import me.towecraft.utils.models.ServerModel;
+import me.towecraft.utils.models.server.ServerModel;
 import me.towecraft.utils.models.cache.PlayerDataList;
+import me.towecraft.utils.models.server.ServersData;
 import me.towecraft.utils.mysql.MySQL;
 import me.towecraft.utils.timers.CaptchaTimer;
 import me.towecraft.utils.timers.LoginTimer;
@@ -52,10 +53,13 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
     public static CaptchaListener captchaListener;
 
     public static String nameServer = null;
-    public static List<ServerModel> servers;
+
     public static TAS plugin;
 
+    public static ServersData serversData;
+
     private PlayerMethods playerMethods;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     Thread updater;
     Runnable mainRunnable;
@@ -79,8 +83,6 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
         plugin = this;
         playerMethods = new PlayerMethods(this);
         typeCaptcha = this.getConfig().getInt("General.captchaType");
-
-        servers = new ArrayList<>();
 
         loginTimer = new LoginTimer();
         registerTimer = new RegisterTimer();
@@ -148,11 +150,14 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
 
         List<ServerModel> servers = new ArrayList<>();
 
-        TAS.servers.sort(Comparator.comparing(ServerModel::getNowPlayer));
+        synchronized (serversData) {
 
-        for (final ServerModel s : TAS.servers)
-            if (s.getName().contains(where.split("_")[0]))
-                servers.add(s);
+            serversData.getServers().sort(Comparator.comparing(ServerModel::getNowPlayer));
+
+            for (final ServerModel s : serversData.getServers())
+                if (s.getName().contains(where.split("_")[0]))
+                    servers.add(s);
+        }
 
         if (servers.size() < 1) {
             String result;
@@ -236,25 +241,20 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
 
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
 
-        servers.clear();
+        try {
+            String data = in.readUTF();
 
-        while (true) {
-            try {
-                String[] data = in.readUTF().split(":");
-
-                if (data[0].equals("serverName")) {
-                    nameServer = data[1];
-                    return;
-                }
-
-                ServerModel temp = new ServerModel(data[1], data[2], data[3], data[4], Integer.parseInt(data[5]), Integer.parseInt(data[6]));
-
-                if (data[0].equals("server") && temp.getInStatus().equals("online"))
-                    servers.add(temp);
-
-            } catch (Exception e) {
-                break;
+            if (data.split(":")[0].equals("serverName")) {
+                nameServer = data.split(":")[1];
+                return;
             }
+
+            synchronized (serversData) {
+                serversData = objectMapper.readValue(data, ServersData.class);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -295,16 +295,12 @@ public final class TAS extends JavaPlugin implements CommandExecutor, PluginMess
         return loginTimer;
     }
 
-    public static CaptchaTimer  getCaptchaTimer() {
+    public static CaptchaTimer getCaptchaTimer() {
         return captchaTimer;
     }
 
     public PlayerMethods getPlayerMethods() {
         return playerMethods;
-    }
-
-    public void setPlayerMethods(PlayerMethods playerMethods) {
-        this.playerMethods = playerMethods;
     }
 
     public int getTypeCaptcha() {
