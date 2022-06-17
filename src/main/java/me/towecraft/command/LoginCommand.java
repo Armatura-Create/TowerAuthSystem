@@ -1,18 +1,36 @@
-package me.towecraft.utils.cmd;
+package me.towecraft.command;
 
 import me.towecraft.TAS;
+import me.towecraft.utils.FileMessages;
 import me.towecraft.utils.callbacks.CallbackSQL;
 import me.towecraft.utils.mysql.MySQL;
-import me.towecraft.utils.password.HashMethod;
+import me.towecraft.utils.HashUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.Component;
+import unsave.plugin.context.annotations.PostConstruct;
 
 import java.sql.Timestamp;
 
-public class LoginCMD implements CommandExecutor {
+
+@Component
+public class LoginCommand implements CommandExecutor {
+
+    @Autowire
+    private TAS plugin;
+
+    @Autowire
+    private FileMessages fileMessages;
+
+    @PostConstruct
+    public void init() {
+        plugin.getCommand("l").setExecutor(this);
+        plugin.getCommand("login").setExecutor(this);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -28,10 +46,10 @@ public class LoginCMD implements CommandExecutor {
                                     @Override
                                     public void done(final String data) {
                                         if (data.equals("1")) {
-                                            sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.login.already"));
+                                            sender.sendMessage(plugin.getPrefix() + fileMessages.getMSG().getString("Commands.login.already",  "Not found string [Commands.login.already]"));
                                         }
                                         if (args.length == 1) {
-                                            HashMethod.MashMatch((Player) sender, args[0], new CallbackSQL<Boolean>() {
+                                            HashUtil.MashMatch((Player) sender, args[0], new CallbackSQL<Boolean>() {
                                                 @Override
                                                 public void done(final Boolean correctPass) {
                                                     if (correctPass) {
@@ -69,7 +87,7 @@ public class LoginCMD implements CommandExecutor {
                     });
                 }
             }
-        }.runTaskAsynchronously(TAS.plugin);
+        }.runTaskAsynchronously(plugin);
 
         return true;
     }

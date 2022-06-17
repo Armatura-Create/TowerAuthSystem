@@ -1,4 +1,4 @@
-package me.towecraft.utils.timers;
+package me.towecraft.timers;
 
 import me.towecraft.TAS;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ public class CaptchaTimer {
         this.time = 7; //Sec
     }
 
-    public void logTimer(final Player player) {
+    public void logTimer(Player player) {
         this.timers.put(player.getName(), new BukkitRunnable() {
             @Override
             public void run() {

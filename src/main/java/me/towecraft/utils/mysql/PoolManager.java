@@ -2,7 +2,6 @@ package me.towecraft.utils.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import me.towecraft.utils.Constants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

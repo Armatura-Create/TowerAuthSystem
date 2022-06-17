@@ -1,3 +1,58 @@
+Prefix: '§6TAS §8» §7'
+
+KickMessages:
+  youBot:
+    §f
+    §f              §e§lTowerAuthSystem
+
+    §f Вы дЫбил!
+
+    §8
+  incorrectName:
+    §f
+    §f              §e§lTowerAuthSystem
+
+    §f Ник должен содержать только латинские буквы или цифры!
+
+    §8'
+  timeoutAuth:
+    §f
+    §f      §e§lTowerAuthSystem
+    
+    §f Ваше время на авторизацию истекло.
+    §f Пожалуйста, попробуйте позднее!
+    &8
+  manyConnections:
+    §8§m-------------------------------------------
+
+    §f         §e§lTowerAuthSystem
+
+    §eСлишком частые переподключения, попробуйте позднее!
+
+    §8§m-------------------------------------------
+  accountRemove:
+    §8§m-------------------------------------------
+
+    §f         §e§lTowerAuthSystem
+
+    §eВаш аккаунт был удалён админом §8→ %admin%
+
+    §8§m-------------------------------------------
+  successLastSession:
+    §f
+    §f              §e§lTowerAuthSystem
+    §a ▪ §fВы успешно вошли в прошлую сессию §a▪
+    §f
+  errorLastSession:
+    §8§m-------------------------------------------
+
+    §d§lTower§b§lCraft §6§lAuth
+
+    §cВаши данные были сброшены, пожалуйста §fперезайдите!
+
+    §8§m-------------------------------------------
+
+
 AutoMessages:
   register:
     - ''
@@ -26,66 +81,6 @@ AutoMessages:
     - ''
   ServerDown:
     - '§fВы перемещены в Limbo'
-KickMessages:
-  IncorrectBot:
-    '§f
-      §f              §e§lTowerAuthSystem
-
-      §f Вы дЫбил!
-
-      §8'
-
-  IncorrectName:
-    '§f
-    §f              §e§lTowerAuthSystem
-
-    §f Ник должен содержать только латинские буквы или цифры!
-
-    §8'
-
-  register:
-    - '§f'
-    - '§f      §e§lTowerAuthSystem'
-    - ''
-    - '§f Ваше время на авторизацию истекло.'
-    - '§f Пожалуйста, попробуйте позднее!'
-    - '&8'
-  login:
-    - '§f'
-    - '§f      §e§lTowerAuthSystem'
-    - ''
-    - '§f Ваше время на авторизацию истекло.'
-    - '§f Пожалуйста, попробуйте позднее!'
-  MaxLogin:
-    §8§m-------------------------------------------
-
-    §f         §e§lTowerAuthSystem
-
-    §eСлишком частые переподключения, попробуйте позднее!
-
-    §8§m-------------------------------------------
-  unregisterkick:
-    §8§m-------------------------------------------
-
-    §f         §e§lTowerAuthSystem
-
-    §eВаш аккаунт был удалён админом §8→ %admin%
-
-    §8§m-------------------------------------------
-  NameCheck:
-    §f
-    §f              §e§lTowerAuthSystem
-    §a ▪ §fВы успешно вошли в прошлую сессию §a▪
-    §f
-  ClearCache:
-    §8§m-------------------------------------------
-
-    §d§lTower§b§lCraft §6§lAuth
-
-    §cВаши данные были сброшены, пожалуйста §fперезайдите!
-
-    §8§m-------------------------------------------
-
 
 Titles:
   register:
@@ -133,7 +128,3 @@ Commands:
     correct: '§6§lAUTH §8→ Пиши §c§e/authadmin playercacheclear %player%'
     success: '§aThe cache for %player% was cleared from the server'
     player_msg: '§cYour player info was removed from the cache by an admin, try join again.'
-
-BannedPasswords:
-  - '123456'
-  - '654321'

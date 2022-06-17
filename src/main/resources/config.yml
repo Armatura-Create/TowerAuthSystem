@@ -1,3 +1,36 @@
 General:
-  updateInterval: 2000
-  captchaType: 3 #1 or 2 or 3
+  updateInterval: 2 #In sec
+  captchaType: 3 #type captcha 1, 2, 3 or 0 - disable
+
+Database:
+  host: 127.0.0.1
+  port: 3306
+  database: nameBase
+  ssl: false
+  user: user
+  password: password
+  hikari:
+    minConnections: 10
+    maxConnections: 100
+    timeout: 30 #In sec
+
+SMTP:
+  enable: false
+  user: userSmtp
+  password: passwordSmtp
+
+
+NextConnect: Hub #Name server to connect when success login
+
+Username:
+  excludeSymbol:
+    - '$'
+    - ' '
+    - "-"
+
+Password:
+  minLength: 6
+  maxLength: 16
+  banned:
+    - '123456'
+    - '654321'

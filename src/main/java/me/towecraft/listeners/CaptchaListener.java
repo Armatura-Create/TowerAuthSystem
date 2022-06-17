@@ -1,6 +1,7 @@
 package me.towecraft.listeners;
 
 import me.towecraft.TAS;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,20 +10,28 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.Component;
+import unsave.plugin.context.annotations.PostConstruct;
 
 import java.util.HashMap;
 
+@Component
 public class CaptchaListener implements Listener {
 
-    private final HashMap<String, Integer> countMissClick;
-    private final HashMap<String, Integer> countDoneClick;
+    @Autowire
+    private TAS plugin;
 
-    private final HashMap<String, Integer> fastClick;
+    private HashMap<String, Integer> countMissClick;
+    private HashMap<String, Integer> countDoneClick;
 
-    private final HashMap<String, Boolean> isClick;
+    private HashMap<String, Integer> fastClick;
 
-    public CaptchaListener() {
-        TAS.registerListener(this);
+    private HashMap<String, Boolean> isClick;
+
+    @PostConstruct
+    public void init() {
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         countMissClick = new HashMap<>();
         countDoneClick = new HashMap<>();
         fastClick = new HashMap<>();
@@ -39,7 +48,7 @@ public class CaptchaListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(final InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent e) {
         if (e.getWhoClicked() instanceof Player) {
             final Player player = (Player) e.getWhoClicked();
             e.setCancelled(true);

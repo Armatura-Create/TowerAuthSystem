@@ -4,24 +4,32 @@ import com.google.common.io.ByteStreams;
 import me.towecraft.TAS;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.PostConstruct;
+import unsave.plugin.context.annotations.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Files {
-    private final TAS plugin;
+@Service
+public class FileMessages {
+
+    @Autowire
+    private TAS plugin;
     private Configuration config;
 
-    public Files(final TAS plugin) {
-        this.plugin = plugin;
+    @PostConstruct
+    public void init() {
+        createMessages();
     }
 
     public void createMessages() {
         if (!this.plugin.getDataFolder().exists()) {
             this.plugin.getDataFolder().mkdir();
         }
+
         File file = new File(this.plugin.getDataFolder(), "Messages.yml");
         if (!file.exists()) {
             try {

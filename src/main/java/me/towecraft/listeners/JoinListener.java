@@ -1,43 +1,52 @@
 package me.towecraft.listeners;
 
 import me.towecraft.TAS;
+import me.towecraft.utils.FileMessages;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.Component;
+import unsave.plugin.context.annotations.PostConstruct;
 
+@Component
 public class JoinListener implements Listener {
 
-    public JoinListener() {
-        TAS.registerListener(this);
+    @Autowire
+    private TAS plugin;
+
+    @Autowire
+    private FileMessages fileMessages;
+
+    @PostConstruct
+    public void init() {
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onJoin(final PlayerJoinEvent e) {
+    public void onJoin(PlayerJoinEvent e) {
 
-        Player p = e.getPlayer();
+        Player player = e.getPlayer();
 
-        final String name = p.getName();
+        String name = player.getName();
 
-        if (name.matches("^[А-ЯЁа-яё]*")) {
-            p.kickPlayer(ChatColor.translateAlternateColorCodes('&', TAS.files.getMSG().getString("KickMessages.IncorrectName")));
+        if (name.matches("^[А-ЯЁа-яё]*")
+                || name.length() < 3
+                || name.length() > 16
+                || name.matches("^\\w*")
+                || name.contains("$")
+                || name.contains(" ")
+                || name.contains("-")) {
+            player.kickPlayer(ChatColor.translateAlternateColorCodes('&', fileMessages
+                    .getMSG()
+                    .getString("KickMessages.incorrectName", "Not found string [KickMessages.IncorrectName]")));
             return;
         }
 
-        if (name.length() >= 3 && name.length() <= 16 && name.matches("^\\w*") && !name.contains("$") && !name.contains(" ") && !name.contains("-")) {
 
-            TAS.captchaListener.getCountDoneClick().put(p.getName(), 0);
-
-            TAS.plugin.getPlayerMethods().sendVerifyMSG(
-                    p,
-                    TAS.plugin.getPlayerDataList().searchPlayer(p.getName()) == null,
-                    true
-            );
-
-        } else {
-            p.kickPlayer(ChatColor.translateAlternateColorCodes('&', TAS.files.getMSG().getString("KickMessages.IncorrectName")));
-        }
     }
 }

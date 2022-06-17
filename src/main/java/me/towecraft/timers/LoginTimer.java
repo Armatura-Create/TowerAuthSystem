@@ -1,4 +1,4 @@
-package me.towecraft.utils.timers;
+package me.towecraft.timers;
 
 import me.towecraft.TAS;
 import org.bukkit.entity.Player;
