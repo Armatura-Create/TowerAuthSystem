@@ -1,7 +1,7 @@
 package me.towecraft.service;
 
 import me.towecraft.TAS;
-import me.towecraft.utils.TGSLogger;
+import me.towecraft.utils.PluginLogger;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 
@@ -20,7 +20,7 @@ public class SpigotUpdater {
     private TAS plugin;
 
     @Autowire
-    private TGSLogger tgsLogger;
+    private PluginLogger pluginLogger;
 
     @PostConstruct
     public void init() {
@@ -50,9 +50,9 @@ public class SpigotUpdater {
             URLConnection con = checkURL.openConnection();
             this.newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
             if (!plugin.getDescription().getVersion().equals(newVersion))
-                tgsLogger.log("An update was found! New version: " + getLatestVersion() + " download: " + getResourceURL());
+                pluginLogger.log("An update was found! New version: " + getLatestVersion() + " download: " + getResourceURL());
         } catch (Exception e) {
-            tgsLogger.log("Could not check for updates! Stacktrace:");
+            pluginLogger.log("Could not check for updates! Stacktrace:");
             e.printStackTrace();
         }
     }

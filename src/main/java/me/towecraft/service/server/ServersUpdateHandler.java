@@ -4,7 +4,7 @@ import de.dytanic.cloudnet.driver.CloudNetDriver;
 import de.dytanic.cloudnet.driver.service.ServiceInfoSnapshot;
 import de.dytanic.cloudnet.ext.bridge.BridgeServiceProperty;
 import me.towecraft.TAS;
-import me.towecraft.utils.TGSLogger;
+import me.towecraft.utils.PluginLogger;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.PreDestroy;
@@ -20,14 +20,14 @@ public class ServersUpdateHandler {
     private TAS plugin;
 
     @Autowire
-    private TGSLogger tgsLogger;
+    private PluginLogger pluginLogger;
 
     private final List<ServerModel> servers = new ArrayList<>();
     private Thread workThread;
 
     @PostConstruct
     public void init() {
-        tgsLogger.log("Start get servers");
+        pluginLogger.log("Start get servers");
         workThread = new Thread(() -> {
             while (true) {
                 synchronized (servers) {
@@ -70,7 +70,7 @@ public class ServersUpdateHandler {
     @PreDestroy
     public void destroy() {
 
-        tgsLogger.log("Stop get servers");
+        pluginLogger.log("Stop get servers");
 
         if (workThread != null && workThread.isAlive() && !workThread.isInterrupted())
             workThread.interrupt();

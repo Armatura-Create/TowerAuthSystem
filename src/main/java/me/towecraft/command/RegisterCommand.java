@@ -42,6 +42,9 @@ public class RegisterCommand implements CommandExecutor {
             @Override
             public void run() {
                 if (sender instanceof Player) {
+
+
+
                     MySQL.isPlayerDB((Player) sender, new CallbackSQL<Boolean>() {
 
                         @Override

@@ -2,9 +2,9 @@ package me.towecraft.command;
 
 import me.towecraft.TAS;
 import me.towecraft.utils.FileMessages;
+import me.towecraft.utils.HashUtil;
 import me.towecraft.utils.callbacks.CallbackSQL;
 import me.towecraft.utils.mysql.MySQL;
-import me.towecraft.utils.HashUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,6 +38,9 @@ public class LoginCommand implements CommandExecutor {
             @Override
             public void run() {
                 if (sender instanceof Player) {
+
+
+
                     MySQL.isPlayerDB((Player) sender, new CallbackSQL<Boolean>() {
                         @Override
                         public void done(final Boolean isPlayerDB) {
@@ -46,7 +49,7 @@ public class LoginCommand implements CommandExecutor {
                                     @Override
                                     public void done(final String data) {
                                         if (data.equals("1")) {
-                                            sender.sendMessage(plugin.getPrefix() + fileMessages.getMSG().getString("Commands.login.already",  "Not found string [Commands.login.already]"));
+                                            sender.sendMessage(plugin.getPrefix() + fileMessages.getMSG().getString("Commands.login.already", "Not found string [Commands.login.already]"));
                                         }
                                         if (args.length == 1) {
                                             HashUtil.MashMatch((Player) sender, args[0], new CallbackSQL<Boolean>() {

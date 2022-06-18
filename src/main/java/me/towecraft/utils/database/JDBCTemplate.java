@@ -1,6 +1,7 @@
 package me.towecraft.utils.database;
 
 import lombok.RequiredArgsConstructor;
+import me.towecraft.utils.PluginLogger;
 import me.towecraft.utils.database.rowMappers.RowMapper;
 
 import javax.sql.DataSource;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class JDBCTemplate {
 
     private final DataSource dataSource;
+    private final PluginLogger pluginLogger;
 
     public <T> List<T> query(String query, Object[] params, RowMapper<T> rowMapper) {
         try (Connection connection = dataSource.getConnection()) {
@@ -29,7 +31,8 @@ public class JDBCTemplate {
 
             return result;
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            pluginLogger.log(ex.getMessage());
+            return new ArrayList<>();
         }
     }
 
@@ -46,7 +49,8 @@ public class JDBCTemplate {
             }
             return Optional.empty();
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            pluginLogger.log(ex.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -58,7 +62,8 @@ public class JDBCTemplate {
             }
             return ps.executeUpdate();
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            pluginLogger.log(ex.getMessage());
+            return 0;
         }
     }
 }

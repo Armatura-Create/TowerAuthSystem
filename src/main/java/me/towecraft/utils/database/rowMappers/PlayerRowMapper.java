@@ -1,5 +1,6 @@
 package me.towecraft.utils.database.rowMappers;
 
+import lombok.RequiredArgsConstructor;
 import me.towecraft.utils.database.entity.PlayerEntity;
 import me.towecraft.utils.database.repository.PlayerAuthRepository;
 
@@ -7,9 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class PlayerRowMapper<T> implements RowMapper<PlayerEntity> {
 
-    private PlayerAuthRepository playerAuthRepository;
+    private final PlayerAuthRepository playerAuthRepository;
     @Override
     public PlayerEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new PlayerEntity()

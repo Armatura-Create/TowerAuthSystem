@@ -5,12 +5,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.towecraft.TAS;
 import me.towecraft.utils.HashUtil;
 import me.towecraft.utils.NameServerService;
-import me.towecraft.utils.PrintMessageChatUtil;
-import me.towecraft.utils.TGSLogger;
+import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.utils.PluginLogger;
 import me.towecraft.utils.database.JDBCTemplate;
+import me.towecraft.utils.database.repository.InitBaseRepository;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Bean;
 import unsave.plugin.context.annotations.Configuration;
+import unsave.plugin.context.annotations.PostConstruct;
 
 import javax.sql.DataSource;
 
@@ -20,9 +22,12 @@ public class PluginConfig {
     @Autowire
     private TAS plugin;
 
+    @Autowire
+    private InitBaseRepository initBaseRepository;
+
     @Bean
-    public TGSLogger getTGSLogger() {
-        return new TGSLogger();
+    public PluginLogger getPluginLogger() {
+        return new PluginLogger();
     }
 
     @Bean
@@ -31,13 +36,13 @@ public class PluginConfig {
     }
 
     @Bean
-    public PrintMessageChatUtil getPrintMessageChatUtil() {
-        return new PrintMessageChatUtil();
+    public PrintMessageUtil getPrintMessageChatUtil() {
+        return new PrintMessageUtil();
     }
 
     @Bean
     public JDBCTemplate getJDBCTemplate() {
-        return new JDBCTemplate(getDataSource());
+        return new JDBCTemplate(getDataSource(), getPluginLogger());
     }
 
     @Bean
@@ -86,6 +91,12 @@ public class PluginConfig {
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         return new HikariDataSource(hikariConfig);
+    }
+
+    @PostConstruct
+    public void init() {
+        initBaseRepository.initPlayersTable();
+        initBaseRepository.initAuthPlayersTable();
     }
 
 }

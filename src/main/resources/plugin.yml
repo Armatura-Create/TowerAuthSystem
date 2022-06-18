@@ -9,7 +9,16 @@ commands:
   connect:
     description: 'Connect to current server'
   l:
+    description: 'Login command'
   login:
+    description: 'Login command'
 
   r:
+    description: 'Registration command'
   reg:
+    description: 'Registration command'
+
+  rec:
+    description: 'Recovery password command'
+  recovery:
+    description: 'Recovery password command'

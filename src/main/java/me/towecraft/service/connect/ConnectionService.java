@@ -6,7 +6,8 @@ import me.towecraft.service.server.ServersUpdateHandler;
 import me.towecraft.service.server.TypeStatusServer;
 import me.towecraft.utils.FileMessages;
 import me.towecraft.utils.NameServerService;
-import me.towecraft.utils.TGSLogger;
+import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.utils.PluginLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import unsave.plugin.context.annotations.Autowire;
@@ -33,7 +34,9 @@ public class ConnectionService {
     @Autowire
     private FileMessages fileMessages;
     @Autowire
-    private TGSLogger tgsLogger;
+    private PluginLogger pluginLogger;
+    @Autowire
+    private PrintMessageUtil printMessageUtil;
 
     public void connect(Player player, String pieceTypeServer, TypeConnect typeConnect) {
 
@@ -47,9 +50,8 @@ public class ConnectionService {
                 .collect(Collectors.toList());
 
         if (servers.size() < 1)
-            player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&',
-                    fileMessages.getMSG().getString("GUI.main.wrongArgumentConnect",
-                            "String not found (GUI.main.wrongArgumentConnect)")));
+            printMessageUtil.sendMessage(player, fileMessages.getMSG().getString("GUI.main.wrongArgumentConnect",
+                    "String not found (GUI.main.wrongArgumentConnect)"));
 
         switch (typeConnect) {
             case RANDOM:
@@ -63,7 +65,7 @@ public class ConnectionService {
 
         if (servers.size() > 0) {
 
-        if (nameServerService.getNameServer().equalsIgnoreCase(servers.get(0).getName())) {
+            if (nameServerService.getNameServer().equalsIgnoreCase(servers.get(0).getName())) {
                 player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&',
                         fileMessages.getMSG().getString("GUI.main.areYouHere", "String not found (GUI.main.areYouHere)")) + "§a" + pieceTypeServer);
                 return;
@@ -75,7 +77,7 @@ public class ConnectionService {
                 out.writeUTF("Connect");
                 out.writeUTF(servers.get(0).getName());
             } catch (IOException e) {
-                tgsLogger.log(e.getMessage());
+                pluginLogger.log(e.getMessage());
             }
 
             player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
