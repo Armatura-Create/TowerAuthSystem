@@ -1,7 +1,7 @@
 package me.towecraft.service;
 
 import me.towecraft.TAS;
-import me.towecraft.listeners.captcha.CaptchaListener;
+import me.towecraft.listeners.captcha.CaptchaService;
 import me.towecraft.service.connect.ConnectionService;
 import me.towecraft.service.connect.TypeConnect;
 import me.towecraft.timers.CaptchaTimer;
@@ -17,7 +17,6 @@ import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Service
 public class PlayerService {
@@ -35,7 +34,7 @@ public class PlayerService {
     private PlayerAuthRepository playerAuthRepository;
 
     @Autowire
-    private CaptchaListener captchaListener;
+    private CaptchaService captchaService;
 
     @Autowire
     private PrintMessageUtil printMessageUtil;
@@ -61,12 +60,12 @@ public class PlayerService {
     public void verify(Player player, boolean isVerifyCaptcha) {
 
         playerRepository.findByUsername(player.getName(), result -> {
-            if (isVerifyCaptcha && captchaListener.getCountDoneClick().get(player.getName()) < 3) {
+            if (isVerifyCaptcha && captchaService.getCountDoneClick().get(player.getName()) < 3) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        captchaTimer.logTimer(player);
-                        captchaListener.showCaptcha(player);
+                        captchaTimer.regTimer(player);
+                        captchaService.showCaptcha(player);
                     }
                 }.runTaskLater(plugin, 10L);
             } else if (player.isOnline()) {

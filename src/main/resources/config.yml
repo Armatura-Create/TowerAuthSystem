@@ -21,6 +21,8 @@ Database:
 
 SMTP:
   enable: false
+  host: smtp.gmail.com
+  port: 465
   user: userSmtp
   password: passwordSmtp
 

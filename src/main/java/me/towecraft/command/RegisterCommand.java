@@ -2,7 +2,6 @@ package me.towecraft.command;
 
 import me.towecraft.TAS;
 import me.towecraft.utils.FileMessages;
-import me.towecraft.utils.mysql.MySQL;
 import me.towecraft.utils.HashUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,8 +12,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
-
-import java.util.regex.Pattern;
 
 @Component
 public class RegisterCommand implements CommandExecutor {
@@ -135,22 +132,5 @@ public class RegisterCommand implements CommandExecutor {
         }.runTaskAsynchronously(plugin);
 
         return true;
-    }
-
-    public boolean checkEmail(String email) {
-        return Pattern.compile("(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[A-Za-z0-9-]*[A-Za-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])").matcher(email).matches();
-    }
-
-    public boolean checkRusSymbol(String pass) {
-        return Pattern.matches(".*\\p{InCyrillic}.*", pass);
-    }
-
-    public static boolean checkContainsRusSymbol(String pass) {
-        for (int i = 0; i < pass.length(); i++) {
-            if (Character.UnicodeBlock.of(pass.charAt(i)).equals(Character.UnicodeBlock.CYRILLIC)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
