@@ -1,6 +1,6 @@
 General:
   updateInterval: 2 #Update servers from CloudNet (In sec)
-  captchaType: 3 #type captcha 1, 2, 3 or 0 - disable
+  captchaType: 4 #type captcha 1, 2, 3, 4 or 0 - disable
   nextConnect: Hub #Name server to connect when success login
   timeSessions: 1800 #Autologin when reconnect (In sec)
   timeLogin: 30 #If user not login in this time - kick him (In sec)

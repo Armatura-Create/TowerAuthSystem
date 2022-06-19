@@ -18,7 +18,7 @@ public class PrintMessageService {
     }
 
     public void sendMessage(Player player, List<String> messages) {
-        messages.forEach(m -> player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', m)));
+        messages.forEach(m -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', m)));
     }
 
     public void kickMessage(Player player, String message) {

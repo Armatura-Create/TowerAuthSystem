@@ -15,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
@@ -64,14 +65,16 @@ public class RegisterCommand implements CommandExecutor {
 
         if (sender instanceof Player) {
 
+            Player player = ((Player) sender).getPlayer();
+
             playerRepository.findByUsername(sender.getName(), result -> {
                 if (result.isPresent()) {
-                    printMessage.sendMessage((Player) sender,
+                    printMessage.sendMessage(player,
                             fileMessages.getMSG().getString("Commands.register.existPlayer",
                                     "Not found [Commands.register.existPlayer] in Message.yml"));
                 } else {
                     if (args.length < 2 || !args[0].equals(args[1])) {
-                        printMessage.sendMessage((Player) sender,
+                        printMessage.sendMessage(player,
                                 fileMessages.getMSG().getString("Commands.register.wrongArgs",
                                         "Not found [Commands.register.wrongArgs] in Message.yml"));
                         return;
@@ -85,14 +88,14 @@ public class RegisterCommand implements CommandExecutor {
 
                     for (String s : plugin.getConfig().getStringList("Password.banned")) {
                         if (args[0].equals(s)) {
-                            printMessage.sendMessage((Player) sender,
+                            printMessage.sendMessage(player,
                                     fileMessages.getMSG().getString("Commands.register.bannedPassword",
                                             "Not found [Commands.register.bannedPassword] in Message.yml"));
                             return;
                         }
                     }
                     if (args[0].length() < minPassLength || args[0].length() > maxPassLength) {
-                        printMessage.sendMessage((Player) sender,
+                        printMessage.sendMessage(player,
                                 fileMessages.getMSG().getString("Commands.register.lengthPassword",
                                                 "Not found [Commands.register.lengthPassword] in Message.yml")
                                         .replace("%min%", minPassLength + "")
@@ -104,7 +107,7 @@ public class RegisterCommand implements CommandExecutor {
 
                     if (args.length == 3) {
                         if (!checkEmail(args[2])) {
-                            printMessage.sendMessage((Player) sender,
+                            printMessage.sendMessage(player,
                                     fileMessages.getMSG().getString("Commands.register.wrongEmail",
                                             "Not found [Commands.register.wrongEmail] in Message.yml"));
                             return;
@@ -113,25 +116,34 @@ public class RegisterCommand implements CommandExecutor {
                     }
 
                     PlayerAuthEntity playerAuth = new PlayerAuthEntity()
-                            .setPlayerUuid(((Player) sender).getUniqueId())
-                            .setIpRegistration(((Player) sender).getAddress().getHostName())
-                            .setIpLogin(((Player) sender).getAddress().getHostName())
+                            .setPlayerUuid(player.getUniqueId())
+                            .setIpRegistration(player.getAddress().getHostName())
+                            .setIpLogin(player.getAddress().getHostName())
                             .setTimeRegistration(new Date())
                             .setLastLogin(new Date());
 
-                    PlayerEntity player = new PlayerEntity()
+                    PlayerEntity playerEntity = new PlayerEntity()
                             .setEmail(email)
                             .setPlayerAuth(playerAuth)
                             .setPassword(hashUtil.toHash(args[0]))
-                            .setUsername(sender.getName())
-                            .setUuid(((Player) sender).getUniqueId());
+                            .setUsername(player.getName())
+                            .setUuid(player.getUniqueId());
 
-                    playerRepository.save(player, isReg -> {
+                    playerRepository.save(playerEntity, isReg -> {
                         if (isReg){
-                            registerTimer.removeTimer(sender.getName());
-                            connectionService.connect((Player) sender,
-                                    plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                    TypeConnect.MIN);
+                            printMessage.sendMessage(player,
+                                    fileMessages.getMSG().getString("Commands.register.successRegister",
+                                            "Not found [Commands.register.successRegister] in Message.yml"));
+                            registerTimer.removeTimer(player.getName());
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    connectionService.connect(player,
+                                            plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                            TypeConnect.MIN);
+                                }
+                            }.runTaskLater(plugin, 20L);
+
                         } else {
                             logger.log("Error registration");
                         }

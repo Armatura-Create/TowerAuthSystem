@@ -23,12 +23,16 @@ public class CaptchaService {
     private TAS plugin;
     private Map<String, CaptchaModel> mapActions;
     private TypeCaptcha typeCaptcha;
+    private TypeCaptcha currentTypeCaptcha;
 
     @PostConstruct
     public void init() {
         typeCaptcha = Arrays.stream(TypeCaptcha.values())
                 .filter(t -> t.getType() == plugin.getConfig().getInt("General.captchaType", 0))
                 .findFirst().orElse(TypeCaptcha.NONE);
+
+        if (typeCaptcha != TypeCaptcha.RANDOM)
+            currentTypeCaptcha = typeCaptcha;
 
         mapActions = new ConcurrentHashMap<>();
     }
@@ -37,7 +41,13 @@ public class CaptchaService {
         if (player.isOnline()) {
             Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Проверка на бота");
 
-            if (typeCaptcha.getType() == 1) {
+            if (typeCaptcha == TypeCaptcha.RANDOM) {
+                currentTypeCaptcha  = Arrays.stream(TypeCaptcha.values())
+                        .filter(t -> t.getType() == ((int) (Math.random() * (3 - 1)) + 1))
+                        .findFirst().orElse(TypeCaptcha.NONE);
+            }
+
+            if (currentTypeCaptcha == TypeCaptcha.SHOW_ALL_ITEM) {
                 List<Integer> random = new ArrayList<>();
 
                 for (int i = 0; i < 3; i++) {
@@ -63,8 +73,6 @@ public class CaptchaService {
                 inventory.setItem((int) (Math.random() * 54), itemStackClick);
             }
 
-            mapActions.put(player.getName(), new CaptchaModel());
-
             player.openInventory(inventory);
         }
     }
@@ -74,7 +82,7 @@ public class CaptchaService {
     }
 
     public TypeCaptcha getTypeCaptcha() {
-        return typeCaptcha;
+        return currentTypeCaptcha;
     }
 
 }

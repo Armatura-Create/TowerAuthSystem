@@ -11,8 +11,8 @@ public class PlayerAuthRowMapper<T> implements RowMapper<PlayerAuthEntity> {
     public PlayerAuthEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new PlayerAuthEntity()
                 .setPlayerUuid(UUID.fromString(rs.getString("player_uuid")))
-                .setIpLogin(rs.getString("ip_login"))
-                .setIpRegistration(rs.getString("ip_reg"))
+                .setIpLogin(rs.getString("login_ip"))
+                .setIpRegistration(rs.getString("reg_ip"))
                 .setTimeRegistration(rs.getDate("time_reg"))
                 .setLastLogin(rs.getDate("last_login"))
                 .setRecoveryCode(rs.getString("recovery_code"));

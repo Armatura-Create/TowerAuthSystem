@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Repository;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM auth_players WHERE player_uuid = ?", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
+                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE player_uuid = ?", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
@@ -44,7 +45,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM auth_players WHERE name = ?", new Object[]{username}, new PlayerRowMapper<>(playerAuthRepository));
+                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE name = ?", new Object[]{username}, new PlayerRowMapper<>(playerAuthRepository));
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
@@ -55,6 +56,25 @@ public class MysqlPlayerRepository implements PlayerRepository {
 
     @Override
     public void save(PlayerEntity player, MysqlCallback<Boolean> callback) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
 
+                int result = jdbcTemplate.update("INSERT INTO players (uuid, name, password, email) VALUES (?,?,?,?)",
+                        new Object[]{
+                                player.getUuid().toString(),
+                                player.getUsername(),
+                                player.getPassword(),
+                                player.getEmail()
+                        });
+
+                if (result == 1)
+                    result = playerAuthRepository.save(player.getPlayerAuth());
+
+                if (callback != null) {
+                    callback.callback(result == 1);
+                }
+            }
+        }.runTaskAsynchronously(plugin);
     }
 }

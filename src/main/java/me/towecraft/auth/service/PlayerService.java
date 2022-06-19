@@ -16,7 +16,6 @@ import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Service
@@ -67,29 +66,31 @@ public class PlayerService {
             captchaService.getMapActions().put(player.getName(), new CaptchaModel());
 
         playerRepository.findByUsername(player.getName(), result -> {
-            if (isVerifyCaptcha && captchaService.getMapActions().get(player.getName()).getCountDoneClick() < 3) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        captchaTimer.regTimer(player);
-                        captchaService.showCaptcha(player);
-                    }
-                }.runTaskLater(plugin, 10L);
-            } else if (player.isOnline()) {
+            if (player.isOnline()) {
                 if (result.isPresent()) {
-                    if ((timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() >=
-                            new Timestamp(System.currentTimeMillis()).getTime() - (timeSession * 1000L) &&
-                            result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName())
-                            || result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName()))) {
-
-                        printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.sessionSuccess"));
-                        playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
+                    if (result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName())) {
+                        if (timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() >=
+                                new Date(System.currentTimeMillis()).getTime() - (timeSession * 1000L)) {
+                            loginTimer.regTimer(player);
+                            printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
+                        } else {
+                            printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.sessionSuccess"));
+                            playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    connectionService.connect(player, serverConnect, TypeConnect.MIN);
+                                }
+                            }.runTaskLater(plugin, 20L);
+                        }
+                    } else if (isVerifyCaptcha) {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                connectionService.connect(player, serverConnect, TypeConnect.MIN);
+                                captchaTimer.regTimer(player);
+                                captchaService.showCaptcha(player);
                             }
-                        }.runTaskLater(plugin, 20L);
+                        }.runTaskLater(plugin, 10L);
                     } else {
                         printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
                         loginTimer.regTimer(player);

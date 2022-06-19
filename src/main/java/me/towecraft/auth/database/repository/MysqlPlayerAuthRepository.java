@@ -22,7 +22,21 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
 
     @Override
     public Optional<PlayerAuthEntity> findByUuid(String uuid) {
-        return jdbcTemplate.queryForObject("SELECT * FROM player_auth WHERE player_uuid = ?;", new Object[]{uuid}, new PlayerAuthRowMapper<>());
+        return jdbcTemplate.queryForObject("SELECT * FROM auth_data WHERE player_uuid = ?;",
+                new Object[]{uuid}, new PlayerAuthRowMapper<>()
+        );
+    }
+
+    @Override
+    public int save(PlayerAuthEntity playerAuth) {
+        return jdbcTemplate.update("INSERT INTO auth_data (player_uuid, login_ip, reg_ip, time_reg, last_login) VALUES (?, ?, ?, ?, ?)",
+                new Object[]{
+                        playerAuth.getPlayerUuid().toString(),
+                        playerAuth.getIpLogin(),
+                        playerAuth.getIpRegistration(),
+                        new Timestamp(playerAuth.getTimeRegistration().getTime()),
+                        new Timestamp(playerAuth.getLastLogin().getTime())
+                });
     }
 
     @Override
@@ -31,8 +45,12 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
             @Override
             public void run() {
                 if (callback != null) {
-                    int result = jdbcTemplate.update("UPDATE auth_players SET last_login = ?, ip_login = ?, captcha_valid = true WHERE player_uuid = ?;",
-                            new Object[]{new Timestamp(playerAuth.getLastLogin().getTime()), playerAuth.getIpLogin(), playerAuth.getPlayerUuid().toString()});
+                    int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ? WHERE player_uuid = ?;",
+                            new Object[]{
+                                    new Timestamp(playerAuth.getLastLogin().getTime()),
+                                    playerAuth.getIpLogin(),
+                                    playerAuth.getPlayerUuid().toString()
+                    });
                     callback.callback(result == 1);
                 }
             }
@@ -46,7 +64,7 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
             public void run() {
                 if (callback != null) {
                     int result =
-                            jdbcTemplate.update("UPDATE auth_players SET ip_reg = ?, ip_login = ?, time_reg = ?, last_login = ?, captcha_valid = true WHERE player_uuid = ?;",
+                            jdbcTemplate.update("UPDATE auth_data SET reg_ip = ?, login_ip = ?, time_reg = ?, last_login = ? WHERE player_uuid = ?;",
                                     new Object[]{
                                             playerAuth.getIpRegistration(),
                                             playerAuth.getIpLogin(),
@@ -62,7 +80,7 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
 
     @Override
     public void saveRecovery(PlayerAuthEntity playerAuth) {
-        jdbcTemplate.update("UPDATE auth_players SET recovery_code = ? WHERE player_uuid = ?;",
+        jdbcTemplate.update("UPDATE auth_data SET recovery_code = ? WHERE player_uuid = ?;",
                 new Object[]{
                         playerAuth.getRecoveryCode(),
                         playerAuth.getPlayerUuid().toString()

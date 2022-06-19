@@ -65,8 +65,8 @@ public class LoginCommand implements CommandExecutor {
                         if (result.isPresent()) {
                             if (args.length == 1) {
                                 if (hashUtil.match(args[0], result.get().getPassword())) {
-                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("AutoMessages.successLogin",
-                                            "Not found string [AutoMessages.AutoMessages.successLogin]"));
+                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.successLogin",
+                                            "Not found string [Commands.login.successLogin]"));
 
                                     playerAuthRepository.saveLogin(result.get().getPlayerAuth()
                                             .setLastLogin(new Date())
@@ -81,13 +81,13 @@ public class LoginCommand implements CommandExecutor {
                                         }
                                     });
                                 } else
-                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("AutoMessages.wrongPassword",
-                                            "Not found string [AutoMessages.AutoMessages.wrongPassword]"));
+                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.wrongPassword",
+                                            "Not found string [Commands.login.wrongPassword]"));
                             } else
-                                printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("AutoMessages.wrongArgs",
-                                        "Not found string [AutoMessages.AutoMessages.wrongArgs]"));
+                                printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.wrongArgs",
+                                        "Not found string [Commands.login.wrongArgs]"));
                         } else {
-                            printMessage.sendMessage((Player) sender, fileMessages.getMSG().getStringList("AutoMessages.register"));
+                            printMessage.sendMessage((Player) sender, fileMessages.getMSG().getStringList("Commands.register.wrongArgs"));
                         }
                     });
                 }
