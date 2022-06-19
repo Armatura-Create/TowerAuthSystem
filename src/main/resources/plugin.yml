@@ -1,6 +1,6 @@
 name: TAS
 version: ${project.version}
-main: me.towecraft.TAS
+main: me.towecraft.auth.TAS
 api-version: 1.13
 author: Armatura
 description: Auth System
