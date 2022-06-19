@@ -46,7 +46,7 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
             public void run() {
                 int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ?, recovery_code = NULL WHERE player_uuid = ?;",
                         new Object[]{
-                                new Timestamp(playerAuth.getLastLogin().getTime()),
+                                playerAuth.getLastLogin().getTime(),
                                 playerAuth.getIpLogin(),
                                 playerAuth.getPlayerUuid().toString()
                         });
