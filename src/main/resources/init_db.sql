@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS players
     password VARCHAR(70) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS auth_players
+CREATE TABLE IF NOT EXISTS auth_data
 (
-    player_uuid   CHAR(36)    NOT NULL PRIMARY KEY,
+    player_uuid   CHAR(36)    NOT NULL PRIMARY KEY REFERENCES players(uuid),
     login_ip      VARCHAR(15) NOT NULL,
     reg_ip        VARCHAR(15) NOT NULL,
     last_login    TIMESTAMP   NOT NULL,
     time_reg      TIMESTAMP   NOT NULL,
-    captcha_valid BOOLEAN     NOT NULL
+    recovery_code CHAR(6) NULL
 );

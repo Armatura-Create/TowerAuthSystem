@@ -2,7 +2,7 @@ package me.towecraft.timers;
 
 import me.towecraft.TAS;
 import me.towecraft.utils.FileMessages;
-import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.service.PrintMessageService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
@@ -19,7 +19,7 @@ public class LoginTimer {
     private TAS plugin;
 
     @Autowire
-    private PrintMessageUtil printMessageUtil;
+    private PrintMessageService printMessageUtil;
 
     @Autowire
     private FileMessages fileMessages;
@@ -33,19 +33,15 @@ public class LoginTimer {
         this.time = plugin.getConfig().getInt("General.timeLogin", 30); //Sec
     }
 
-    public void logTimer(Player player) {
+    public void regTimer(Player player) {
         timers.put(player.getName(), new BukkitRunnable() {
             @Override
             public void run() {
                 if (LoginTimer.this.timers.containsKey(player.getName())) {
-                    if (player.isOnline()) {
-                        LoginTimer.this.timers.get(player.getName()).cancel();
-                        LoginTimer.this.timers.remove(player.getName());
-                        printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.login"));
-                    } else {
-                        LoginTimer.this.timers.get(player.getName()).cancel();
-                        LoginTimer.this.timers.remove(player.getName());
-                    }
+                    removeTimer(player.getName());
+                    if (player.isOnline())
+                        printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
+                                "Not found string [KickMessages.timeoutAuth]"));
                 }
             }
         });
@@ -58,10 +54,6 @@ public class LoginTimer {
                 player.setLevel(player.getLevel() - 1);
             }
         }.runTaskTimer(plugin, 40L, 20L);
-    }
-
-    public Map<String, BukkitRunnable> getTimers() {
-        return this.timers;
     }
 
     public void removeTimer(String playerName) {

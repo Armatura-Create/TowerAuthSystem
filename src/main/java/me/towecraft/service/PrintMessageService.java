@@ -1,13 +1,16 @@
-package me.towecraft.utils;
+package me.towecraft.service;
 
 import me.towecraft.TAS;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.Component;
+import unsave.plugin.context.annotations.Service;
 
 import java.util.List;
 
-public class PrintMessageUtil {
+@Service
+public class PrintMessageService {
     @Autowire
     private TAS plugin;
 

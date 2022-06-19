@@ -14,4 +14,5 @@ public interface PlayerAuthRepository {
 
     void changePassword(PlayerAuthEntity playerAuth, MysqlCallback<Boolean> callback);
 
+    void saveRecovery(PlayerAuthEntity playerAuth);
 }

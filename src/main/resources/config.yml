@@ -8,12 +8,12 @@ General:
   timeCaptcha: 30 #If user not success captcha in this time - kick him (In sec)
 
 Database:
-  host: 127.0.0.1
+  host: 152.70.52.190
   port: 3306
-  database: nameBase
+  database: TCBack
   ssl: false
-  user: user
-  password: password
+  user: root
+  password: oz7WXg3hpw6JxGmwVOo9F!ObGBf4tNf7c47gDgbQPvmY6%iA5w
   hikari:
     minConnections: 10
     maxConnections: 100

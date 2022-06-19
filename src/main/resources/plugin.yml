@@ -18,7 +18,7 @@ commands:
   reg:
     description: 'Registration command'
 
-  rec:
+  pass:
     description: 'Recovery password command'
-  recovery:
+  password:
     description: 'Recovery password command'

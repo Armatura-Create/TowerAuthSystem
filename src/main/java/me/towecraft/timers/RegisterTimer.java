@@ -1,6 +1,9 @@
 package me.towecraft.timers;
 
 import me.towecraft.TAS;
+import me.towecraft.utils.FileMessages;
+import me.towecraft.service.PrintMessageService;
+import me.towecraft.utils.database.repository.PlayerRepository;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
@@ -15,6 +18,14 @@ public class RegisterTimer {
 
     @Autowire
     private TAS plugin;
+
+    @Autowire
+    private PlayerRepository playerRepository;
+
+    @Autowire
+    private PrintMessageService printMessageUtil;
+    @Autowire
+    private FileMessages fileMessages;
 
     private Map<String, BukkitRunnable> timers;
     private int time;
@@ -31,22 +42,11 @@ public class RegisterTimer {
             public void run() {
                 if (RegisterTimer.this.timers.containsKey(player.getName())) {
                     try {
-                        MySQL.isPlayerDB(player, new CallbackSQL<Boolean>() {
-                            @Override
-                            public void done(Boolean data) {
-                                if (data) {
-                                    RegisterTimer.this.timers.get(player.getName()).cancel();
-                                    RegisterTimer.this.timers.remove(player.getName());
-                                } else {
-                                    RegisterTimer.this.timers.get(player.getName()).cancel();
-                                    RegisterTimer.this.timers.remove(player.getName());
-                                    player.kickPlayer(TAS.getPrefix() + TAS.files.getMSG().getString("KickMessages.register"));
-                                }
-                            }
-
-                            @Override
-                            public void error(Exception ex) {
-                                TAS.log(ex.getMessage());
+                        playerRepository.findByUsername(player.getName(), result -> {
+                            removeTimer(player.getName());
+                            if (!result.isPresent()) {
+                                printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
+                                        "Not found string [KickMessages.timeoutAuth]"));
                             }
                         });
                     } catch (Exception ex) {
@@ -64,10 +64,6 @@ public class RegisterTimer {
                 player.setLevel(player.getLevel() - 1);
             }
         }.runTaskTimer(plugin, 40L, 20L);
-    }
-
-    public Map<String, BukkitRunnable> getTimers() {
-        return this.timers;
     }
 
     public void removeTimer(String playerName) {

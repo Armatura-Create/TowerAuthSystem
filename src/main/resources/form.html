@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+<style>
+    body {
+        margin: 0 auto;
+        max-width: 600px;
+        width: 100%;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .header {
+        background-color: #000000;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header > span {
+        font-style: normal;
+        font-weight: 800;
+        font-size: 11px;
+        line-height: 13px;
+        color: #ffffff;
+    }
+
+    .logo {
+        margin-right: 5px;
+    }
+
+
+    .body {
+        width: 100%;
+        height: 150px;
+        background: url(https://i.imgur.com/8riv7mA.png);
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footer {
+        width: 100%;
+        height: 30px;
+        background-color: #000000;
+
+    }
+
+    .footer-container {
+        width: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .body-container {
+        width: 300px;
+    }
+
+    .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .content-header {
+        height: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 5px 5px 0px 0px;
+
+    }
+
+    .content-header > span {
+        font-weight: 800;
+        font-size: 10px;
+        line-height: 12px;
+        color: #FFFFFF;
+    }
+
+    .icon {
+        display: flex;
+        align-items: center;
+        margin-right: 2px;
+    }
+
+    .content-body {
+        height: 60px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 0px 0px 5px 5px;
+    }
+
+    .content-code {
+        height: 30px;
+        margin-top: 6px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 5px;
+    }
+
+    .content-code > span {
+        font-weight: 800;
+        font-size: 15px;
+        line-height: 18px;
+        color: #FFFFFF;
+    }
+
+    .content-body-text {
+        font-family: 'Arial', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 8px;
+        line-height: 9px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+
+    .content-body-greetings {
+        font-family: 'Arial', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 14px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+
+    p {
+        margin-block-end: 0.4rem;
+        margin-block-start: 0;
+    }
+
+    .logo-footer {
+
+    }
+
+    .logo-footer > span {
+        font-weight: 800;
+        font-size: 5px;
+        line-height: 6px;
+        color: #FFFFFF;
+        margin-left: 5px;
+    }
+
+    .menu {
+        gap: 30px;
+        margin-left: 50px;
+    }
+
+    a {
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 5px;
+        line-height: 6px;
+        color: #FFFFFF;
+    }
+
+    a:hover {
+        color: #7C7C7C;
+    }
+
+    .button > svg {
+        margin-right: 2px;
+    }
+</style>
+<div class="header">
+    <span>TOWERCRAFT ENTERTAINMENT</span>
+</div>
+<div class="body">
+    <div class="body-container">
+        <div class="content-header flex">
+            <svg class="icon" width="7" height="9" viewBox="0 0 7 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.50001 0.899994C2.25737 0.899994 1.25001 1.90735 1.25001 3.14999V4.04999C0.75295 4.04999 0.350006 4.45294 0.350006 4.94999V7.19999C0.350006 7.69705 0.75295 8.09999 1.25001 8.09999H5.75001C6.24706 8.09999 6.65001 7.69705 6.65001 7.19999V4.94999C6.65001 4.45294 6.24706 4.04999 5.75001 4.04999H2.15001V3.14999C2.15001 2.40441 2.75442 1.79999 3.50001 1.79999C4.12844 1.79999 4.65761 2.2298 4.8075 2.81216C4.86945 3.05284 5.11478 3.19774 5.35546 3.13579C5.59615 3.07384 5.74104 2.82851 5.6791 2.58783C5.42935 1.61748 4.54903 0.899994 3.50001 0.899994Z"
+                      fill="white"/>
+            </svg>
+            <span>Восстановление пароля</span>
+        </div>
+        <div class="content-body flex">
+            <div class="container">
+                <p class="content-body-greetings">Уважаемый %player%</p>
+                <span class="content-body-text flex">
+                    Для восстановления вашего пароля вам необходимо скопировать код ниже и ввести его по примеру:                /123456 {новый пароль}
+                </span>
+            </div>
+        </div>
+        <div class="content-code flex">
+            <span>Ваш код: %code%</span>
+        </div>
+    </div>
+</div>
+<div class="footer flex">
+    <div class="footer-container">
+        <div class="container">
+            <div class="logo-footer flex">
+                <span>TOWERCRAFT ENTERTAINMENT</span>
+            </div>
+        </div>
+        <div class="menu flex">
+            <a class="button flex" href="/">
+                <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M4 2.66667V0.533333C4 0.238781 3.77614 0 3.5 0H0.5C0.223858 0 0 0.238782 0 0.533333V2.66667C0 2.96122 0.223858 3.2 0.5 3.2H1.25L2 4L2.75 3.2H3.5C3.77614 3.2 4 2.96122 4 2.66667ZM0.75 1.06667C0.75 0.919391 0.861929 0.8 1 0.8H3C3.13807 0.8 3.25 0.919391 3.25 1.06667C3.25 1.21394 3.13807 1.33333 3 1.33333H1C0.861929 1.33333 0.75 1.21394 0.75 1.06667ZM1 1.86667C0.861929 1.86667 0.75 1.98606 0.75 2.13333C0.75 2.28061 0.861929 2.4 1 2.4H1.75C1.88807 2.4 2 2.28061 2 2.13333C2 1.98606 1.88807 1.86667 1.75 1.86667H1Z"
+                          fill="white"/>
+                </svg>
+                новости
+            </a>
+            <a class="button flex" href="/">
+                <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C1.36882 0 0.857142 0.447715 0.857142 1V1.25H0.57143C0.425844 1.25 0.30354 1.34578 0.287463 1.47239L0.00174889 3.72239C-0.00722583 3.79307 0.0186216 3.86374 0.0728219 3.91673C0.127022 3.96972 0.204446 4 0.285715 4H3.71428C3.79555 4 3.87298 3.96972 3.92718 3.91673C3.98138 3.86374 4.00723 3.79307 3.99825 3.72239L3.71254 1.47239C3.69646 1.34578 3.57416 1.25 3.42857 1.25H3.14285V1C3.14285 0.447715 2.63118 0 2 0ZM2.57143 1.25V1C2.57143 0.723858 2.31559 0.5 2 0.5C1.68441 0.5 1.42857 0.723858 1.42857 1V1.25H2.57143ZM0.857142 2C0.857142 1.86193 0.985061 1.75 1.14286 1.75C1.30065 1.75 1.42857 1.86193 1.42857 2C1.42857 2.13807 1.30065 2.25 1.14286 2.25C0.985061 2.25 0.857142 2.13807 0.857142 2ZM2.85714 1.75C2.69935 1.75 2.57143 1.86193 2.57143 2C2.57143 2.13807 2.69935 2.25 2.85714 2.25C3.01494 2.25 3.14285 2.13807 3.14285 2C3.14285 1.86193 3.01494 1.75 2.85714 1.75Z" fill="white"/>
+                </svg>
+                магазин
+            </a>
+            <a class="button flex" href="/">
+                <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M4 2.66667V0.533333C4 0.238781 3.77614 0 3.5 0H0.5C0.223858 0 0 0.238782 0 0.533333V2.66667C0 2.96122 0.223858 3.2 0.5 3.2H1.25L2 4L2.75 3.2H3.5C3.77614 3.2 4 2.96122 4 2.66667ZM0.75 1.06667C0.75 0.919391 0.861929 0.8 1 0.8H3C3.13807 0.8 3.25 0.919391 3.25 1.06667C3.25 1.21394 3.13807 1.33333 3 1.33333H1C0.861929 1.33333 0.75 1.21394 0.75 1.06667ZM1 1.86667C0.861929 1.86667 0.75 1.98606 0.75 2.13333C0.75 2.28061 0.861929 2.4 1 2.4H1.75C1.88807 2.4 2 2.28061 2 2.13333C2 1.98606 1.88807 1.86667 1.75 1.86667H1Z"
+                          fill="white"/>
+                </svg>
+                форум
+            </a>
+            <a class="button flex" href="/">
+                <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.2 0.4C2.31046 0.4 2.4 0.489543 2.4 0.6C2.4 0.710457 2.31046 0.8 2.2 0.8H1.8C1.68954 0.8 1.6 0.710457 1.6 0.6C1.6 0.489543 1.68954 0.4 1.8 0.4H2.2Z" fill="white"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3.2 1C3.2 0.779086 3.02091 0.6 2.8 0.6C2.8 0.93137 2.53137 1.2 2.2 1.2H1.8C1.46863 1.2 1.2 0.93137 1.2 0.6C0.979087 0.6 0.800001 0.779086 0.800001 1V3.2C0.800001 3.42091 0.979087 3.6 1.2 3.6H2.8C3.02091 3.6 3.2 3.42091 3.2 3.2V1ZM2.6 1.8C2.71046 1.8 2.8 1.88954 2.8 2C2.8 2.11046 2.71046 2.2 2.6 2.2H2.598C2.48754 2.2 2.398 2.11046 2.398 2C2.398 1.88954 2.48754 1.8 2.598 1.8H2.6ZM2 1.8C2.11046 1.8 2.2 1.88954 2.2 2C2.2 2.11046 2.11046 2.2 2 2.2H1.4C1.28954 2.2 1.2 2.11046 1.2 2C1.2 1.88954 1.28954 1.8 1.4 1.8H2ZM2.6 2.6C2.71046 2.6 2.8 2.68954 2.8 2.8C2.8 2.91046 2.71046 3 2.6 3H2.598C2.48754 3 2.398 2.91046 2.398 2.8C2.398 2.68954 2.48754 2.6 2.598 2.6H2.6ZM2 2.6C2.11046 2.6 2.2 2.68954 2.2 2.8C2.2 2.91046 2.11046 3 2 3H1.4C1.28954 3 1.2 2.91046 1.2 2.8C1.2 2.68954 1.28954 2.6 1.4 2.6H2Z" fill="white"/>
+                </svg>
+                банлист
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,9 +1,9 @@
 package me.towecraft.timers;
 
 import me.towecraft.TAS;
-import me.towecraft.listeners.captcha.CaptchaService;
+import me.towecraft.service.CaptchaService;
 import me.towecraft.utils.FileMessages;
-import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.service.PrintMessageService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
@@ -26,7 +26,7 @@ public class CaptchaTimer {
     private FileMessages fileMessages;
 
     @Autowire
-    private PrintMessageUtil printMessageUtil;
+    private PrintMessageService printMessageUtil;
 
     private Map<String, BukkitRunnable> timers;
     private long time;
@@ -42,25 +42,18 @@ public class CaptchaTimer {
             @Override
             public void run() {
                 if (timers.containsKey(player.getName())) {
-                    if (captchaService.getCountDoneClick().get(player.getName()) != null &&
-                            captchaService.getCountDoneClick().get(player.getName()) < 3) {
+                    if (captchaService.getMapActions().get(player.getName()).getCountDoneClick() < 3) {
+                        captchaService.getMapActions().remove(player.getName());
+                        removeTimer(player.getName());
 
-                        captchaService.getCountDoneClick().remove(player.getName());
-                        captchaService.getCountMissClick().remove(player.getName());
-
-                        timers.get(player.getName()).cancel();
-                        timers.remove(player.getName());
-
-                        printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.captcha"));
+                        if (player.isOnline())
+                            printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                                    "Not found string [KickMessages.youBot]"));
                     }
                 }
             }
         });
         timers.get(player.getName()).runTaskLater(plugin, time * 20L);
-    }
-
-    public Map<String, BukkitRunnable> getTimers() {
-        return this.timers;
     }
 
     public void removeTimer(String playerName) {

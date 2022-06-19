@@ -79,4 +79,13 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
             }
         }.runTaskAsynchronously(plugin);
     }
+
+    @Override
+    public void saveRecovery(PlayerAuthEntity playerAuth) {
+        jdbcTemplate.update("UPDATE auth_players SET recovery_code = ? WHERE player_uuid = ?;",
+                new Object[]{
+                        playerAuth.getRecoveryCode(),
+                        playerAuth.getPlayerUuid().toString()
+                });
+    }
 }

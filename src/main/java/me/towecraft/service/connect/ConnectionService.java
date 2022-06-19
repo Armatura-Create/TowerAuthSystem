@@ -6,7 +6,7 @@ import me.towecraft.service.server.ServersUpdateHandler;
 import me.towecraft.service.server.TypeStatusServer;
 import me.towecraft.utils.FileMessages;
 import me.towecraft.utils.NameServerService;
-import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.service.PrintMessageService;
 import me.towecraft.utils.PluginLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class ConnectionService {
     @Autowire
     private PluginLogger pluginLogger;
     @Autowire
-    private PrintMessageUtil printMessageUtil;
+    private PrintMessageService printMessageUtil;
 
     public void connect(Player player, String pieceTypeServer, TypeConnect typeConnect) {
 

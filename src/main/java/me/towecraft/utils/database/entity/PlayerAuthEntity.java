@@ -15,5 +15,5 @@ public class PlayerAuthEntity {
     private String ipLogin;
     private Date lastLogin;
     private Date timeRegistration;
-    private Boolean validCaptcha;
+    private String recoveryCode;
 }

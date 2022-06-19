@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.towecraft.TAS;
 import me.towecraft.utils.HashUtil;
 import me.towecraft.utils.NameServerService;
-import me.towecraft.utils.PrintMessageUtil;
 import me.towecraft.utils.PluginLogger;
 import me.towecraft.utils.database.JDBCTemplate;
 import me.towecraft.utils.database.repository.InitBaseRepository;
@@ -33,11 +32,6 @@ public class PluginConfig {
     @Bean
     public NameServerService getNameServerService() {
         return new NameServerService();
-    }
-
-    @Bean
-    public PrintMessageUtil getPrintMessageChatUtil() {
-        return new PrintMessageUtil();
     }
 
     @Bean

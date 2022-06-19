@@ -1,7 +1,8 @@
-package me.towecraft.listeners.captcha;
+package me.towecraft.service;
 
 import me.towecraft.TAS;
-import me.towecraft.service.PlayerService;
+import me.towecraft.listeners.captcha.CaptchaModel;
+import me.towecraft.listeners.captcha.TypeCaptcha;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,8 +21,6 @@ public class CaptchaService {
 
     @Autowire
     private TAS plugin;
-    @Autowire
-    private PlayerService playerService;
     private Map<String, CaptchaModel> mapActions;
     private TypeCaptcha typeCaptcha;
 
@@ -32,10 +31,6 @@ public class CaptchaService {
                 .findFirst().orElse(TypeCaptcha.NONE);
 
         mapActions = new ConcurrentHashMap<>();
-    }
-
-    public void success(Player player) {
-        playerService.verify(player, false);
     }
 
     public void showCaptcha(Player player) {
@@ -54,7 +49,7 @@ public class CaptchaService {
                 }
 
                 ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                final ItemMeta meta = itemStackClick.getItemMeta();
+                ItemMeta meta = itemStackClick.getItemMeta();
                 meta.setDisplayName("§cНажмите на меня");
                 itemStackClick.setItemMeta(meta);
                 for (Integer integer : random) {
@@ -62,7 +57,7 @@ public class CaptchaService {
                 }
             } else {
                 ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                final ItemMeta meta = itemStackClick.getItemMeta();
+                ItemMeta meta = itemStackClick.getItemMeta();
                 meta.setDisplayName("§cНажмите на меня");
                 itemStackClick.setItemMeta(meta);
                 inventory.setItem((int) (Math.random() * 54), itemStackClick);

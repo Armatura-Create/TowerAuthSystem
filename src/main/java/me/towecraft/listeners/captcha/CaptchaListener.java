@@ -1,8 +1,10 @@
 package me.towecraft.listeners.captcha;
 
 import me.towecraft.TAS;
+import me.towecraft.service.CaptchaService;
+import me.towecraft.service.PlayerService;
 import me.towecraft.utils.FileMessages;
-import me.towecraft.utils.PrintMessageUtil;
+import me.towecraft.service.PrintMessageService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,7 +27,10 @@ public class CaptchaListener implements Listener {
     private CaptchaService captchaService;
 
     @Autowire
-    private PrintMessageUtil printMessageUtil;
+    private PlayerService playerService;
+
+    @Autowire
+    private PrintMessageService printMessage;
 
     @Autowire
     private FileMessages fileMessages;
@@ -37,7 +42,7 @@ public class CaptchaListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(final InventoryCloseEvent e) {
+    public void onInventoryClose(InventoryCloseEvent e) {
         if (e.getPlayer() != null && e.getPlayer() instanceof Player &&
                 captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < 3) {
 
@@ -67,7 +72,6 @@ public class CaptchaListener implements Listener {
                             captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
                             captchaService.getMapActions().put(player.getName(), captchaModel);
                         } else {
-
                             if (!e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName().equals("§aВыполнено")) {
                                 ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
                                 final ItemMeta meta = done.getItemMeta();
@@ -80,10 +84,11 @@ public class CaptchaListener implements Listener {
                                     captchaService.getMapActions().put(player.getName(), captchaModel);
                                     if (captchaModel.getCountDoneClick() >= 3) {
                                         player.closeInventory();
-                                        captchaService.success(player);
+                                        playerService.verify(player, false);
                                     }
                                 }
-                                if (captchaService.getTypeCaptcha().getType() == 2 || captchaService.getTypeCaptcha().getType() == 3) {
+                                if (captchaService.getTypeCaptcha().getType() == 2 ||
+                                        captchaService.getTypeCaptcha().getType() == 3) {
                                     if (captchaService.getTypeCaptcha().getType() == 3) {
                                         e.getInventory().setItem(e.getSlot(), null);
                                     }
@@ -97,8 +102,8 @@ public class CaptchaListener implements Listener {
                             }
                         }
                         if (captchaModel.getCountMissClick() > 3) {
-                            printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.IncorrectName"));
-
+                            printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                                    "Not found string [KickMessages.youBot]"));
                             captchaService.getMapActions().remove(player.getName());
                         }
                         try {
@@ -111,14 +116,16 @@ public class CaptchaListener implements Listener {
                         captchaModel.setClick(false);
                         captchaService.getMapActions().put(player.getName(), captchaModel);
                     } else {
-                        printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.IncorrectBot"));
+                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                                "Not found string [KickMessages.youBot]"));
                         captchaService.getMapActions().remove(player.getName());
                     }
                 }).start();
             } else {
                 captchaModel.setFastClick(captchaModel.getFastClick() + 1);
                 if (captchaModel.getFastClick() > 10) {
-                    printMessageUtil.kickMessage(player, fileMessages.getMSG().getString("KickMessages.IncorrectBot"));
+                    printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                            "Not found string [KickMessages.youBot]"));
                     captchaService.getMapActions().remove(player.getName());
                 }
             }

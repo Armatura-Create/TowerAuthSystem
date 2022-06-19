@@ -1,17 +1,27 @@
 package me.towecraft.command;
 
 import me.towecraft.TAS;
+import me.towecraft.service.connect.ConnectionService;
+import me.towecraft.service.connect.TypeConnect;
+import me.towecraft.timers.RegisterTimer;
 import me.towecraft.utils.FileMessages;
 import me.towecraft.utils.HashUtil;
-import org.bukkit.ChatColor;
+import me.towecraft.utils.PluginLogger;
+import me.towecraft.service.PrintMessageService;
+import me.towecraft.utils.database.entity.PlayerAuthEntity;
+import me.towecraft.utils.database.entity.PlayerEntity;
+import me.towecraft.utils.database.repository.PlayerRepository;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
+
+import java.util.Date;
+
+import static me.towecraft.utils.MatcherUtil.checkEmail;
 
 @Component
 public class RegisterCommand implements CommandExecutor {
@@ -21,6 +31,22 @@ public class RegisterCommand implements CommandExecutor {
 
     @Autowire
     private FileMessages fileMessages;
+
+    @Autowire
+    private PlayerRepository playerRepository;
+
+    @Autowire
+    private ConnectionService connectionService;
+
+    @Autowire
+    private RegisterTimer registerTimer;
+    @Autowire
+    private PrintMessageService printMessageUtil;
+
+    @Autowire
+    private HashUtil hashUtil;
+    @Autowire
+    private PluginLogger logger;
 
     private int minPassLength;
     private int maxPassLength;
@@ -35,102 +61,84 @@ public class RegisterCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (sender instanceof Player) {
 
+        if (sender instanceof Player) {
 
+            playerRepository.findByUsername(sender.getName(), result -> {
+                if (result.isPresent()) {
+                    printMessageUtil.sendMessage((Player) sender,
+                            fileMessages.getMSG().getString("Commands.register.existPlayer",
+                                    "Not found [Commands.register.existPlayer] in Message.yml"));
+                } else {
+                    if (args.length < 2 || !args[0].equals(args[1])) {
+                        printMessageUtil.sendMessage((Player) sender,
+                                fileMessages.getMSG().getString("Commands.register.wrongArgs",
+                                        "Not found [Commands.register.wrongArgs] in Message.yml"));
+                        return;
+                    }
+//                    if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])) {
+//                        printMessageUtil.sendMessage((Player) sender,
+//                                fileMessages.getMSG().getString("Commands.register.cyrillic_pass",
+//                                        "Not found [Commands.register.cyrillic_pass] in Message.yml"));
+//                        return;
+//                    }
 
-                    MySQL.isPlayerDB((Player) sender, new CallbackSQL<Boolean>() {
-
-                        @Override
-                        public void done(final Boolean data) {
-                            if (data) {
-                                sender.sendMessage(plugin.getPrefix() + fileMessages.getMSG().getString("Commands.register.exist"));
-                            } else {
-                                if (args.length < 2) {
-                                    sender.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes( '&' ,
-                                            fileMessages.getMSG().getString("Commands.register.wrong")));
-                                    return;
-                                }
-                                if (!args[0].equals(args[1])) {
-                                    sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.wrong"));
-                                    return;
-                                }
-
-                                if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])) {
-                                    sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.cyrillic_pass"));
-                                    return;
-                                }
-
-                                boolean b2 = true;
-                                for (String s : TAS.files.getMSG().getStringList("BannedPasswords")) {
-                                    if (args[0].equals(s)) {
-                                        sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.banned"));
-                                        b2 = false;
-                                        break;
-                                    }
-                                }
-
-                                if (args[0].length() < minPassLength) {
-                                    sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.to_short"));
-                                    b2 = false;
-                                }
-
-                                if (args[0].length() > maxPassLength) {
-                                    sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.to_long"));
-                                    b2 = false;
-                                }
-
-                                String email = null;
-
-                                if (args.length == 3) {
-                                    if (!checkEmail(args[2])) {
-                                        sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.to_email"));
-                                        b2 = false;
-                                    } else
-                                        email = args[2];
-                                }
-
-                                if (!b2)
-                                    return;
-
-                                sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.registering"));
-                                MySQL.PlayerSQL((Player) sender, 0, email);
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        MySQL.setPlayerData((Player) sender, "password", HashUtil.HashPassword((Player) sender, args[0]), null);
-                                        sender.sendMessage(TAS.getPrefix() + TAS.files.getMSG().getString("Commands.register.success"));
-                                        MySQL.getPlayer((Player) sender, new CallbackSQL<Boolean>() {
-                                            @Override
-                                            public void done(final Boolean isGetPlayer) {
-                                                if (isGetPlayer) {
-                                                    TAS.connect((Player) sender, "Hub_min");
-                                                    MySQL.updatePlayer(((Player) sender).getPlayer());
-                                                }
-                                            }
-
-                                            @Override
-                                            public void error(final Exception ex) {
-                                                ex.printStackTrace();
-                                            }
-                                        });
-                                    }
-                                }.runTaskAsynchronously(TAS.plugin);
-                            }
+                    for (String s : plugin.getConfig().getStringList("Password.banned")) {
+                        if (args[0].equals(s)) {
+                            printMessageUtil.sendMessage((Player) sender,
+                                    fileMessages.getMSG().getString("Commands.register.bannedPassword",
+                                            "Not found [Commands.register.bannedPassword] in Message.yml"));
+                            return;
                         }
+                    }
+                    if (args[0].length() < minPassLength || args[0].length() > maxPassLength) {
+                        printMessageUtil.sendMessage((Player) sender,
+                                fileMessages.getMSG().getString("Commands.register.lengthPassword",
+                                                "Not found [Commands.register.lengthPassword] in Message.yml")
+                                        .replace("%min%", minPassLength + "")
+                                        .replace("%max%", maxPassLength + ""));
+                        return;
+                    }
 
-                        @Override
-                        public void error(final Exception ex) {
-                            ex.printStackTrace();
+                    String email = null;
+
+                    if (args.length == 3) {
+                        if (!checkEmail(args[2])) {
+                            printMessageUtil.sendMessage((Player) sender,
+                                    fileMessages.getMSG().getString("Commands.register.wrongEmail",
+                                            "Not found [Commands.register.wrongEmail] in Message.yml"));
+                            return;
+                        } else
+                            email = args[2];
+                    }
+
+                    PlayerAuthEntity playerAuth = new PlayerAuthEntity()
+                            .setPlayerUuid(((Player) sender).getUniqueId())
+                            .setIpRegistration(((Player) sender).getAddress().getHostName())
+                            .setIpLogin(((Player) sender).getAddress().getHostName())
+                            .setTimeRegistration(new Date())
+                            .setLastLogin(new Date());
+
+                    PlayerEntity player = new PlayerEntity()
+                            .setEmail(email)
+                            .setPlayerAuth(playerAuth)
+                            .setPassword(hashUtil.toHash(args[0]))
+                            .setUsername(sender.getName())
+                            .setUuid(((Player) sender).getUniqueId());
+
+                    playerRepository.save(player, isReg -> {
+                        if (isReg){
+                            registerTimer.removeTimer(sender.getName());
+                            connectionService.connect((Player) sender,
+                                    plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                    TypeConnect.MIN);
+                        } else {
+                            logger.log("Error registration");
                         }
                     });
                 }
-            }
-        }.runTaskAsynchronously(plugin);
-
+            });
+        }
         return true;
     }
 }

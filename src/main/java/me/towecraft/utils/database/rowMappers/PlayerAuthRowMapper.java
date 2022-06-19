@@ -16,6 +16,6 @@ public class PlayerAuthRowMapper<T> implements RowMapper<PlayerAuthEntity> {
                 .setIpRegistration(rs.getString("ip_reg"))
                 .setTimeRegistration(rs.getDate("time_reg"))
                 .setLastLogin(rs.getDate("last_login"))
-                .setValidCaptcha(rs.getBoolean("captcha_valid"));
+                .setRecoveryCode(rs.getString("recovery_code"));
     }
 }

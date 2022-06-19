@@ -1,6 +1,7 @@
 package me.towecraft.listeners;
 
 import me.towecraft.TAS;
+import me.towecraft.command.RecoveryPasswordCommand;
 import me.towecraft.service.PlayerService;
 import me.towecraft.utils.FileMessages;
 import org.bukkit.Bukkit;
@@ -28,6 +29,9 @@ public class JoinListener implements Listener {
     @Autowire
     private PlayerService playerService;
 
+    @Autowire
+    private RecoveryPasswordCommand recoveryPasswordCommand;
+
     private boolean isCaptcha;
 
     @PostConstruct
@@ -52,10 +56,11 @@ public class JoinListener implements Listener {
                 || excludeSymbols.stream().anyMatch(name::contains)) {
             player.kickPlayer(ChatColor.translateAlternateColorCodes('&', fileMessages
                     .getMSG()
-                    .getString("KickMessages.incorrectName", "Not found string [KickMessages.IncorrectName]")));
+                    .getString("KickMessages.incorrectName", "Not found string [KickMessages.incorrectName]")));
             return;
         }
 
+        recoveryPasswordCommand.getItem(player);
         playerService.verify(player, isCaptcha);
     }
 }
