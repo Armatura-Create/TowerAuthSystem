@@ -19,6 +19,7 @@ public class FileMessages {
     @Autowire
     private TAS plugin;
     private Configuration config;
+    private File formRecovery;
 
     @PostConstruct
     public void init() {
@@ -30,11 +31,12 @@ public class FileMessages {
             this.plugin.getDataFolder().mkdir();
         }
 
-        File file = new File(this.plugin.getDataFolder(), "Messages.yml");
+        File file = new File(plugin.getDataFolder(), "Messages.yml");
+        File form = new File(plugin.getDataFolder(), "form.html");
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                try (InputStream resourceAsStream = this.plugin.getResource("Messages.yml")) {
+                try (InputStream resourceAsStream = plugin.getResource("Messages.yml")) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     try {
                         ByteStreams.copy(resourceAsStream, fileOutputStream);
@@ -43,15 +45,37 @@ public class FileMessages {
                         ex.printStackTrace();
                     }
                 }
-                return;
             } catch (IOException ex2) {
                 throw new RuntimeException("Unable to create config file", ex2);
             }
+        } else {
+            config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "Messages.yml"));
         }
-        YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "Messages.yml"));
+
+        if (!form.exists()) {
+            try {
+                try (InputStream resourceAsStream = plugin.getResource("form.html")) {
+                    FileOutputStream fileOutputStream = new FileOutputStream(form);
+                    try {
+                        ByteStreams.copy(resourceAsStream, fileOutputStream);
+                        formRecovery = new File(plugin.getDataFolder(), "form.html");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } catch (IOException ex2) {
+                throw new RuntimeException("Unable to create config file", ex2);
+            }
+        } else {
+            formRecovery = new File(plugin.getDataFolder(), "form.html");
+        }
     }
 
     public Configuration getMSG() {
         return config;
+    }
+
+    public File getFormRecovery() {
+        return formRecovery;
     }
 }

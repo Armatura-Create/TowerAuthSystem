@@ -47,7 +47,7 @@ public class PluginConfig {
         }
 
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + ssl + "&characterEncoding=utf8&useConfigs=maxPerformance");
+        hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + ssl + "&characterEncoding=utf8&useConfigs=maxPerformance&connectionTimeZone=UTC");
         hikariConfig.setUsername(user);
         hikariConfig.setPassword(password);
         hikariConfig.setMinimumIdle(minConnections);

@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
@@ -36,21 +39,22 @@ public class RecoveryItemListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClickEvent(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals("Восстановление пароля")) {
-            Player player = (Player) event.getWhoClicked();
-            event.setCancelled(true);
-
-            playerRepository.findByUsername(player.getName(), result -> result.ifPresent(p -> {
-                String code = getRandomCode();
-                p.getPlayerAuth().setRecoveryCode(getRandomCode());
-                playerAuthRepository.saveRecovery(p.getPlayerAuth());
-                recoveryService.send(p.getEmail(), "", code, p.getUsername());
-            }));
+    public void onRightClick(PlayerInteractEvent event) {
+        event.setCancelled(true);
+        System.out.println(event.getPlayer().getName());
+        if (event.getItem().getItemMeta().getDisplayName().contains("Восстановление пароля")) {
+            Player player = event.getPlayer();
+            recoveryService.send(player);
         }
     }
 
-    private String getRandomCode() {
-        return null;
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        e.setCancelled(true);
     }
 }

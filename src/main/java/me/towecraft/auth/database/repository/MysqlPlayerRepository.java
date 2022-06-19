@@ -30,7 +30,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE player_uuid = ?", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
+                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE player_uuid = ?;", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
@@ -45,7 +45,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE name = ?", new Object[]{username}, new PlayerRowMapper<>(playerAuthRepository));
+                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE name = ?;", new Object[]{username}, new PlayerRowMapper<>(playerAuthRepository));
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
@@ -60,7 +60,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                int result = jdbcTemplate.update("INSERT INTO players (uuid, name, password, email) VALUES (?,?,?,?)",
+                int result = jdbcTemplate.update("INSERT INTO players (uuid, name, password, email) VALUES (?,?,?,?);",
                         new Object[]{
                                 player.getUuid().toString(),
                                 player.getUsername(),
@@ -74,6 +74,21 @@ public class MysqlPlayerRepository implements PlayerRepository {
                 if (callback != null) {
                     callback.callback(result == 1);
                 }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    @Override
+    public void savePassword(PlayerEntity player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                int result = jdbcTemplate.update("UPDATE players SET password = ? WHERE uuid = ?;",
+                        new Object[]{
+                                player.getPassword(),
+                                player.getUuid().toString()
+                        });
             }
         }.runTaskAsynchronously(plugin);
     }

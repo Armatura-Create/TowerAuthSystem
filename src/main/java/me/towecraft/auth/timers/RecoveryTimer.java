@@ -1,8 +1,8 @@
 package me.towecraft.auth.timers;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.utils.FileMessages;
 import me.towecraft.auth.service.PrintMessageService;
+import me.towecraft.auth.utils.FileMessages;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
@@ -13,16 +13,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class LoginTimer {
+public class RecoveryTimer {
 
     @Autowire
     private TAS plugin;
 
     @Autowire
-    private PrintMessageService printMessage;
+    private FileMessages fileMessages;
 
     @Autowire
-    private FileMessages fileMessages;
+    private PrintMessageService printMessage;
 
     private Map<String, BukkitRunnable> timers;
     private Map<String, BukkitRunnable> timeLevels;
@@ -32,19 +32,18 @@ public class LoginTimer {
     public void init() {
         this.timers = new ConcurrentHashMap<>();
         this.timeLevels = new ConcurrentHashMap<>();
-        this.time = plugin.getConfig().getInt("General.timeLogin", 30); //Sec
+        this.time = plugin.getConfig().getInt("General.timeRecovery", 60); //Sec
     }
 
     public void regTimer(Player player) {
-        timers.put(player.getName(), new BukkitRunnable() {
+        this.timers.put(player.getName(), new BukkitRunnable() {
             @Override
             public void run() {
                 if (timers.containsKey(player.getName())) {
                     removeTimer(player.getName());
-                    if (player.isOnline()) {
-                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
-                                "Not found string [KickMessages.timeoutAuth]"));
-                    }
+                    if (player.isOnline())
+                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutRecovery",
+                                "Not found string [KickMessages.timeRecovery]"));
                 }
             }
         });
@@ -57,8 +56,7 @@ public class LoginTimer {
                 player.setLevel(player.getLevel() - 1);
             }
         };
-        timeLevel.runTaskTimer(plugin, 0, 20L);
-
+        timeLevel.runTaskTimer(plugin, 0L, 20L);
         timeLevels.put(player.getName(), timeLevel);
     }
 

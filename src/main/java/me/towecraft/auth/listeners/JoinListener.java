@@ -67,6 +67,8 @@ public class JoinListener implements Listener {
             return;
         }
 
+        player.getInventory().clear();
+
         recoveryService.getItem(player);
         playerService.verify(player, isCaptcha);
     }

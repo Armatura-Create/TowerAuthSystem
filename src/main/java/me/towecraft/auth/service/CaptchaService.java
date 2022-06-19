@@ -23,7 +23,7 @@ public class CaptchaService {
     private TAS plugin;
     private Map<String, CaptchaModel> mapActions;
     private TypeCaptcha typeCaptcha;
-    private TypeCaptcha currentTypeCaptcha;
+    private Map<String, TypeCaptcha> currentTypeCaptchaMap;
 
     @PostConstruct
     public void init() {
@@ -31,23 +31,28 @@ public class CaptchaService {
                 .filter(t -> t.getType() == plugin.getConfig().getInt("General.captchaType", 0))
                 .findFirst().orElse(TypeCaptcha.NONE);
 
-        if (typeCaptcha != TypeCaptcha.RANDOM)
-            currentTypeCaptcha = typeCaptcha;
-
         mapActions = new ConcurrentHashMap<>();
+        currentTypeCaptchaMap = new ConcurrentHashMap<>();
     }
 
     public void showCaptcha(Player player) {
         if (player.isOnline()) {
             Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Проверка на бота");
 
-            if (typeCaptcha == TypeCaptcha.RANDOM) {
-                currentTypeCaptcha  = Arrays.stream(TypeCaptcha.values())
-                        .filter(t -> t.getType() == ((int) (Math.random() * (3 - 1)) + 1))
-                        .findFirst().orElse(TypeCaptcha.NONE);
+            if (currentTypeCaptchaMap.get(player.getName()) == null) {
+                if (typeCaptcha == TypeCaptcha.RANDOM) {
+                    currentTypeCaptchaMap.put(player.getName(),
+                            Arrays.stream(TypeCaptcha.values())
+                                    .filter(t -> t.getType() == ((int) (Math.random() * 5) + 1))
+                                    .findFirst().orElse(TypeCaptcha.SHOW_ALL_ITEM));
+                } else {
+                    currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
+                }
             }
 
-            if (currentTypeCaptcha == TypeCaptcha.SHOW_ALL_ITEM) {
+            System.out.println(currentTypeCaptchaMap.get(player.getName()).name());
+
+            if (currentTypeCaptchaMap.get(player.getName()) == TypeCaptcha.SHOW_ALL_ITEM) {
                 List<Integer> random = new ArrayList<>();
 
                 for (int i = 0; i < 3; i++) {
@@ -81,8 +86,16 @@ public class CaptchaService {
         return mapActions;
     }
 
-    public TypeCaptcha getTypeCaptcha() {
-        return currentTypeCaptcha;
+    public TypeCaptcha getTypeCaptcha(Player player) {
+        return currentTypeCaptchaMap.get(player.getName());
+    }
+
+    public void removeTypeCaptcha(Player player) {
+        currentTypeCaptchaMap.remove(player.getName());
+    }
+
+    public void setTypeCaptcha(Player player, TypeCaptcha typeCaptcha) {
+        currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
     }
 
 }

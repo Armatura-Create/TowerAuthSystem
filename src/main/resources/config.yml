@@ -1,11 +1,12 @@
 General:
   updateInterval: 2 #Update servers from CloudNet (In sec)
-  captchaType: 4 #type captcha 1, 2, 3, 4 or 0 - disable
-  nextConnect: Hub #Name server to connect when success login
-  timeSessions: 1800 #Autologin when reconnect (In sec)
+  captchaType: 4 #type captcha 1, 2, 3, 4 or 0 - disable (4 - random (1,2,3))
+  nextConnect: Hub #Name server to connect when success login/registration
+  timeSessions: 0 #Autologin when reconnect (In sec)
   timeLogin: 30 #If user not login in this time - kick him (In sec)
   timeReg: 30 #If user not registration in this time - kick him (In sec)
   timeCaptcha: 30 #If user not success captcha in this time - kick him (In sec)
+  timeRecovery: 60 #If user not success recovery password in this time - kick him (In sec)
 
 Database:
   host: 152.70.52.190
@@ -20,11 +21,11 @@ Database:
     timeout: 30 #In sec
 
 SMTP:
-  enable: false
+  enable: true
   host: smtp.gmail.com
   port: 465
-  user: userSmtp
-  password: passwordSmtp
+  user: towercraftsup@gmail.com
+  password: scunerjpvfjpxpmg
 
 Username:
   excludeSymbol:

@@ -52,7 +52,7 @@ public class CaptchaListener implements Listener {
                     if (player.isOnline()) {
                         if (captchaService.getMapActions().get(e.getPlayer().getName()) != null &&
                                 captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < 3) {
-                            if (captchaService.getTypeCaptcha() != TypeCaptcha.NONE) {
+                            if (captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE) {
                                 captchaService.showCaptcha(player);
                             }
                         }
@@ -94,12 +94,13 @@ public class CaptchaListener implements Listener {
                                     captchaService.getMapActions().put(player.getName(), captchaModel);
                                     if (captchaModel.getCountDoneClick() >= 3) {
                                         player.closeInventory();
+                                        captchaService.removeTypeCaptcha(player);
                                         playerService.verify(player, false);
                                     }
                                 }
-                                if (captchaService.getTypeCaptcha().getType() == 2 ||
-                                        captchaService.getTypeCaptcha().getType() == 1) {
-                                    if (captchaService.getTypeCaptcha().getType() == 1) {
+                                if (captchaService.getTypeCaptcha(player).getType() == 2 ||
+                                        captchaService.getTypeCaptcha(player).getType() == 1) {
+                                    if (captchaService.getTypeCaptcha(player).getType() == 1) {
                                         e.getInventory().setItem(e.getSlot(), null);
                                     }
 
@@ -109,7 +110,6 @@ public class CaptchaListener implements Listener {
                                     itemStackClick.setItemMeta(metaClick);
                                     e.getInventory().setItem((int) (Math.random() * 54), itemStackClick);
                                     player.updateInventory();
-                                    System.out.println("Next");
                                 }
                             }
                         }

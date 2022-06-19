@@ -28,11 +28,13 @@ public class RegisterTimer {
     private FileMessages fileMessages;
 
     private Map<String, BukkitRunnable> timers;
+    private Map<String, BukkitRunnable> timeLevels;
     private int time;
 
     @PostConstruct
     public void init() {
         this.timers = new ConcurrentHashMap<>();
+        this.timeLevels = new ConcurrentHashMap<>();
         this.time = plugin.getConfig().getInt("General.timeReg", 30); //Sec
     }
 
@@ -40,11 +42,11 @@ public class RegisterTimer {
         timers.put(player.getName(), new BukkitRunnable() {
             @Override
             public void run() {
-                if (RegisterTimer.this.timers.containsKey(player.getName())) {
+                if (timers.containsKey(player.getName())) {
                     try {
+                        removeTimer(player.getName());
                         playerRepository.findByUsername(player.getName(), result -> {
-                            removeTimer(player.getName());
-                            if (!result.isPresent()) {
+                            if (!result.isPresent() && player.isOnline()) {
                                 printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
                                         "Not found string [KickMessages.timeoutAuth]"));
                             }
@@ -58,18 +60,24 @@ public class RegisterTimer {
         timers.get(player.getName()).runTaskLater(plugin, time * 20L);
 
         player.setLevel(time);
-        new BukkitRunnable() {
+        BukkitRunnable timeLevel = new BukkitRunnable() {
             @Override
             public void run() {
                 player.setLevel(player.getLevel() - 1);
             }
-        }.runTaskTimer(plugin, 40L, 20L);
+        };
+        timeLevel.runTaskTimer(plugin, 0, 20L);
+        timeLevels.put(player.getName(), timeLevel);
     }
 
     public void removeTimer(String playerName) {
         if (timers.containsKey(playerName)) {
             timers.get(playerName).cancel();
             timers.remove(playerName);
+        }
+        if (timeLevels.containsKey(playerName)) {
+            timeLevels.get(playerName).cancel();
+            timeLevels.remove(playerName);
         }
     }
 }

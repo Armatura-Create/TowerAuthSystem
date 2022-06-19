@@ -22,6 +22,13 @@ KickMessages:
     §f Ваше время на авторизацию истекло.
     §f Пожалуйста, попробуйте позднее!
     &8'
+  timeRecovery:
+    '§f
+    §f      §e§lTowerAuthSystem
+    
+    §f Ваше время на восстановление пароля истекло.
+    §f Пожалуйста, попробуйте позднее!
+    &8'
 
 
 AutoMessages:
@@ -48,10 +55,10 @@ AutoMessages:
     - ''
     - '§f         §e§lTowerAuthSystem '
     - ''
-    - '§f  Данный аккаунт §aзарегистрирован'
-    - '§f  Авторизуйтесь, используя команду:'
+    - '§f  На вашу почту отправлен код для восстановления'
+    - '§f  Используйте команду:'
     - ''
-    - '§a      ▪ §a/login(/l) §8[§eпароль§8]§a ▪'
+    - '§a      ▪ §a/password(/pass) §8[§eКОД§8]§a §8[§eновый пароль§8] ▪'
     - ''
   sessionSuccess:
     - ''
@@ -66,7 +73,6 @@ Commands:
     wrongArgs: '§fЗарегистрируйтесь §a/reg(/r) [Пароль] [Повтор Пароля] {Почта}'
     lengthPassword: 'Пароль должен быть не менее %min% и не более %max% символов'
     bannedPassword: '§fТакой пароль нельзя использовать!'
-#    cyrillic_pass: 'Вы не можете использывать кириллицу в пароле!'
     wrongEmail: '§fВаш email не соответствует шаблону §e(Example@gmail.com)!'
     successRegister: '§fВы успешно зарегистрировались'
   login:
@@ -75,4 +81,6 @@ Commands:
     wrongArgs: '§fАвторизуйтесь §e/login(/l) [Пароль]'
     register_first: 'Сначала вам надо зарегистрироваться!'
   recovery:
-    wrongArgs: 'safsafasf'
+    alreadySendCode: 'Вам уже отправлен код'
+    wrongArgs: 'Ошибка в команде §a/password(/pass) §8[§eКОД§8]§a §8[§eновый пароль§8]'
+    wrongCode: 'Неверный код'

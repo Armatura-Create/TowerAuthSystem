@@ -23,19 +23,19 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
     @Override
     public Optional<PlayerAuthEntity> findByUuid(String uuid) {
         return jdbcTemplate.queryForObject("SELECT * FROM auth_data WHERE player_uuid = ?;",
-                new Object[]{uuid}, new PlayerAuthRowMapper<>()
+                new Object[]{uuid}, new PlayerAuthRowMapper()
         );
     }
 
     @Override
     public int save(PlayerAuthEntity playerAuth) {
-        return jdbcTemplate.update("INSERT INTO auth_data (player_uuid, login_ip, reg_ip, time_reg, last_login) VALUES (?, ?, ?, ?, ?)",
+        return jdbcTemplate.update("INSERT INTO auth_data (player_uuid, login_ip, reg_ip, time_reg, last_login) VALUES (?, ?, ?, ?, ?);",
                 new Object[]{
                         playerAuth.getPlayerUuid().toString(),
                         playerAuth.getIpLogin(),
                         playerAuth.getIpRegistration(),
-                        new Timestamp(playerAuth.getTimeRegistration().getTime()),
-                        new Timestamp(playerAuth.getLastLogin().getTime())
+                        playerAuth.getTimeRegistration().getTime(),
+                        playerAuth.getLastLogin().getTime()
                 });
     }
 
@@ -44,13 +44,13 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
         new BukkitRunnable() {
             @Override
             public void run() {
+                int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ?, recovery_code = NULL WHERE player_uuid = ?;",
+                        new Object[]{
+                                new Timestamp(playerAuth.getLastLogin().getTime()),
+                                playerAuth.getIpLogin(),
+                                playerAuth.getPlayerUuid().toString()
+                        });
                 if (callback != null) {
-                    int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ? WHERE player_uuid = ?;",
-                            new Object[]{
-                                    new Timestamp(playerAuth.getLastLogin().getTime()),
-                                    playerAuth.getIpLogin(),
-                                    playerAuth.getPlayerUuid().toString()
-                    });
                     callback.callback(result == 1);
                 }
             }
@@ -68,8 +68,8 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
                                     new Object[]{
                                             playerAuth.getIpRegistration(),
                                             playerAuth.getIpLogin(),
-                                            new Timestamp(playerAuth.getTimeRegistration().getTime()),
-                                            new Timestamp(playerAuth.getLastLogin().getTime()),
+                                            playerAuth.getTimeRegistration().getTime(),
+                                            playerAuth.getLastLogin().getTime(),
                                             playerAuth.getPlayerUuid().toString()
                                     });
                     callback.callback(result == 1);

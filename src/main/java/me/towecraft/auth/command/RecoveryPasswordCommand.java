@@ -1,8 +1,17 @@
 package me.towecraft.auth.command;
 
 import me.towecraft.auth.TAS;
+import me.towecraft.auth.database.entity.PlayerEntity;
+import me.towecraft.auth.database.repository.MysqlCallback;
+import me.towecraft.auth.database.repository.PlayerAuthRepository;
+import me.towecraft.auth.database.repository.PlayerRepository;
 import me.towecraft.auth.service.PrintMessageService;
 import me.towecraft.auth.service.RecoveryService;
+import me.towecraft.auth.service.connect.ConnectionService;
+import me.towecraft.auth.service.connect.TypeConnect;
+import me.towecraft.auth.timers.RecoveryTimer;
+import me.towecraft.auth.utils.FileMessages;
+import me.towecraft.auth.utils.HashUtil;
 import me.towecraft.auth.utils.PluginLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,6 +20,9 @@ import org.bukkit.entity.Player;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
+
+import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class RecoveryPasswordCommand implements CommandExecutor {
@@ -22,14 +34,29 @@ public class RecoveryPasswordCommand implements CommandExecutor {
     private PluginLogger logger;
 
     @Autowire
-    private RecoveryService recoveryService;
+    private PrintMessageService printMessage;
 
     @Autowire
-    private PrintMessageService printMessage;
+    private FileMessages fileMessages;
+
+    @Autowire
+    private PlayerRepository playerRepository;
+
+    @Autowire
+    private PlayerAuthRepository playerAuthRepository;
+
+    @Autowire
+    private ConnectionService connectionService;
+
+    @Autowire
+    private HashUtil hashUtil;
+
+    @Autowire
+    private RecoveryTimer recoveryTimer;
 
     @PostConstruct
     private void init() {
-        if (plugin.getConfig().getBoolean("SMTP.enable", false)){
+        if (plugin.getConfig().getBoolean("SMTP.enable", false)) {
             logger.log("Init command /password");
             plugin.getCommand("pass").setExecutor(this);
             plugin.getCommand("password").setExecutor(this);
@@ -39,7 +66,35 @@ public class RecoveryPasswordCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        printMessage.sendMessage((Player) sender, "Coming soon");
-        return false;
+        if (sender instanceof Player) {
+            Player player = ((Player) sender).getPlayer();
+            if (args.length == 2) {
+                playerRepository.findByUsername(player.getName(), result -> result.ifPresent(p -> {
+                    if (p.getPlayerAuth().getRecoveryCode().equals(args[0])) {
+                        p.setPassword(hashUtil.toHash(args[1]));
+                        playerRepository.savePassword(p);
+                        playerAuthRepository.saveLogin(p.getPlayerAuth()
+                                .setRecoveryCode(null)
+                                .setLastLogin(new Date()), isLogin -> {
+                            if (isLogin) {
+                                recoveryTimer.removeTimer(sender.getName());
+                                connectionService.connect((Player) sender,
+                                        plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                        TypeConnect.MIN);
+                            } else {
+                                logger.log("Error login");
+                            }
+                        });
+                    } else {
+                        printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.wrongCode",
+                                "Not found string [Commands.recovery.wrongCode] in Message.yml"));
+                    }
+                }));
+            } else {
+                printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.wrongArgs",
+                        "Not found string [Commands.recovery.wrongArgs] in Message.yml"));
+            }
+        }
+        return true;
     }
 }

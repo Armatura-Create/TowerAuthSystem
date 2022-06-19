@@ -29,11 +29,13 @@ public class CaptchaTimer {
     private PrintMessageService printMessage;
 
     private Map<String, BukkitRunnable> timers;
-    private long time;
+    private Map<String, BukkitRunnable> timeLevels;
+    private int time;
 
     @PostConstruct
     public void init() {
         this.timers = new ConcurrentHashMap<>();
+        this.timeLevels = new ConcurrentHashMap<>();
         this.time = plugin.getConfig().getInt("General.timeCaptcha", 10); //Sec
     }
 
@@ -45,7 +47,6 @@ public class CaptchaTimer {
                     if (captchaService.getMapActions().get(player.getName()).getCountDoneClick() < 3) {
                         captchaService.getMapActions().remove(player.getName());
                         removeTimer(player.getName());
-
                         if (player.isOnline())
                             printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
                                     "Not found string [KickMessages.youBot]"));
@@ -54,12 +55,26 @@ public class CaptchaTimer {
             }
         });
         timers.get(player.getName()).runTaskLater(plugin, time * 20L);
+
+        player.setLevel(time);
+        BukkitRunnable timeLevel = new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.setLevel(player.getLevel() - 1);
+            }
+        };
+        timeLevel.runTaskTimer(plugin, 0L, 20L);
+        timeLevels.put(player.getName(), timeLevel);
     }
 
     public void removeTimer(String playerName) {
         if (timers.containsKey(playerName)) {
             timers.get(playerName).cancel();
             timers.remove(playerName);
+        }
+        if (timeLevels.containsKey(playerName)) {
+            timeLevels.get(playerName).cancel();
+            timeLevels.remove(playerName);
         }
     }
 }
