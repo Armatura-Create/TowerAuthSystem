@@ -69,6 +69,14 @@ public class RecoveryPasswordCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = ((Player) sender).getPlayer();
             if (args.length == 2) {
+                for (String s : plugin.getConfig().getStringList("Password.banned")) {
+                    if (args[0].equals(s)) {
+                        printMessage.sendMessage(player,
+                                fileMessages.getMSG().getString("Commands.register.bannedPassword",
+                                        "Not found [Commands.register.bannedPassword] in Message.yml"));
+                        return true;
+                    }
+                }
                 playerRepository.findByUsername(player.getName(), result -> result.ifPresent(p -> {
                     if (p.getPlayerAuth().getRecoveryCode().equals(args[0])) {
                         p.setPassword(hashUtil.toHash(args[1]));
@@ -83,6 +91,8 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                                         TypeConnect.MIN);
                             } else {
                                 logger.log("Error login");
+                                printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
+                                        "Not found string [Commands.recovery.error] in Message.yml"));
                             }
                         });
                     } else {

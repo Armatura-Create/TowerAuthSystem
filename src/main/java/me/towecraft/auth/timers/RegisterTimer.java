@@ -47,7 +47,7 @@ public class RegisterTimer /*implements TimerKick*/ {
                     try {
                         removeTimer(player);
                         if (player.isOnline()) {
-                            printMessage.kickMessage(player,
+                            printMessage.kickMessage(player.getPlayer(),
                                     fileMessages.getMSG().getString("KickMessages.timeoutAuth",
                                             "Not found string [KickMessages.timeoutAuth]"));
                         }

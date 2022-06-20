@@ -52,12 +52,15 @@ public class RegisterCommand implements CommandExecutor {
     private int minPassLength;
     private int maxPassLength;
 
+    private boolean requiredEmailRegister;
+
     @PostConstruct
     public void init() {
         plugin.getCommand("r").setExecutor(this);
         plugin.getCommand("reg").setExecutor(this);
         minPassLength = plugin.getConfig().getInt("Password.minLength", 6);
         maxPassLength = plugin.getConfig().getInt("Password.maxLength", 16);
+        requiredEmailRegister = plugin.getConfig().getBoolean("SMTP.enable", false);
     }
 
     @Override
@@ -73,18 +76,13 @@ public class RegisterCommand implements CommandExecutor {
                             fileMessages.getMSG().getString("Commands.register.existPlayer",
                                     "Not found [Commands.register.existPlayer] in Message.yml"));
                 } else {
-                    if (args.length < 2 || !args[0].equals(args[1])) {
-                        printMessage.sendMessage(player,
+                    if (args.length < (requiredEmailRegister ? 3 : 2) || !args[0].equals(args[1])) {
+                        printMessage.sendMessage(player, requiredEmailRegister ? fileMessages.getMSG().getString("Commands.register.wrongArgsWithEmail",
+                                "Not found [Commands.register.wrongArgsWithEmail] in Message.yml") :
                                 fileMessages.getMSG().getString("Commands.register.wrongArgs",
                                         "Not found [Commands.register.wrongArgs] in Message.yml"));
                         return;
                     }
-//                    if (checkRusSymbol(args[1]) || checkContainsRusSymbol(args[1])) {
-//                        printMessage.sendMessage((Player) sender,
-//                                fileMessages.getMSG().getString("Commands.register.cyrillic_pass",
-//                                        "Not found [Commands.register.cyrillic_pass] in Message.yml"));
-//                        return;
-//                    }
 
                     for (String s : plugin.getConfig().getStringList("Password.banned")) {
                         if (args[0].equals(s)) {
@@ -105,7 +103,7 @@ public class RegisterCommand implements CommandExecutor {
 
                     String email = null;
 
-                    if (args.length == 3) {
+                    if (requiredEmailRegister)
                         if (!checkEmail(args[2])) {
                             printMessage.sendMessage(player,
                                     fileMessages.getMSG().getString("Commands.register.wrongEmail",
@@ -113,7 +111,6 @@ public class RegisterCommand implements CommandExecutor {
                             return;
                         } else
                             email = args[2];
-                    }
 
                     PlayerAuthEntity playerAuth = new PlayerAuthEntity()
                             .setPlayerUuid(player.getUniqueId())
@@ -130,7 +127,7 @@ public class RegisterCommand implements CommandExecutor {
                             .setUuid(player.getUniqueId());
 
                     playerRepository.save(playerEntity, isReg -> {
-                        if (isReg){
+                        if (isReg) {
                             printMessage.sendMessage(player,
                                     fileMessages.getMSG().getString("Commands.register.successRegister",
                                             "Not found [Commands.register.successRegister] in Message.yml"));
@@ -146,6 +143,8 @@ public class RegisterCommand implements CommandExecutor {
 
                         } else {
                             logger.log("Error registration");
+                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
+                                    "Not found string [Commands.recovery.error] in Message.yml"));
                         }
                     });
                 }

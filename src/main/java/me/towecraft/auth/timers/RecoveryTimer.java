@@ -43,7 +43,7 @@ public class RecoveryTimer /*implements TimerKick*/ {
                 if (timers.containsKey(player)) {
                     removeTimer(player);
                     if (player.isOnline())
-                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutRecovery",
+                        printMessage.kickMessage(player.getPlayer(), fileMessages.getMSG().getString("KickMessages.timeoutRecovery",
                                 "Not found string [KickMessages.timeRecovery]"));
                 }
             }

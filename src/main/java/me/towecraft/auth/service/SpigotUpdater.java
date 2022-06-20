@@ -4,6 +4,7 @@ import me.towecraft.auth.TAS;
 import me.towecraft.auth.utils.PluginLogger;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
+import unsave.plugin.context.annotations.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,9 +12,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-//@Service
+@Service
 public class SpigotUpdater {
-    private final int projectId = 76667;
+    private final int projectId = 102767;
     private URL checkURL;
     private String newVersion = "";
     @Autowire

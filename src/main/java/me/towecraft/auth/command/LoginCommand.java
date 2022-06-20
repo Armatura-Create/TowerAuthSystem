@@ -1,6 +1,7 @@
 package me.towecraft.auth.command;
 
 import me.towecraft.auth.TAS;
+import me.towecraft.auth.service.CaptchaService;
 import me.towecraft.auth.service.connect.ConnectionService;
 import me.towecraft.auth.service.connect.TypeConnect;
 import me.towecraft.auth.timers.LoginTimer;
@@ -36,6 +37,8 @@ public class LoginCommand implements CommandExecutor {
 
     @Autowire
     private ConnectionService connectionService;
+    @Autowire
+    private CaptchaService captchaService;
     @Autowire
     private LoginTimer loginTimer;
 
@@ -77,8 +80,11 @@ public class LoginCommand implements CommandExecutor {
                                             connectionService.connect(player,
                                                     plugin.getConfig().getString("General.nextConnect", "Hub"),
                                                     TypeConnect.MIN);
+                                            captchaService.removeTypeCaptcha(player);
                                         } else {
                                             logger.log("Error login");
+                                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
+                                                    "Not found string [Commands.recovery.error] in Message.yml"));
                                         }
                                     });
                                 } else

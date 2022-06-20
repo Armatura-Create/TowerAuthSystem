@@ -50,7 +50,6 @@ public class CaptchaListener implements Listener {
                 if (e.getPlayer() != null && e.getPlayer() instanceof Player) {
                     Player player = (Player) e.getPlayer();
                     if (player.isOnline()) {
-                        captchaService.removeTypeCaptcha(player);
                         if (captchaService.getMapActions().get(e.getPlayer().getName()) != null &&
                                 captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < 3) {
                             if (captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE) {
@@ -65,81 +64,59 @@ public class CaptchaListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getWhoClicked() instanceof Player) {
+        if (e != null && e.getWhoClicked() instanceof Player) {
             Player player = (Player) e.getWhoClicked();
             e.setCancelled(true);
 
             CaptchaModel captchaModel = captchaService.getMapActions().get(player.getName());
 
-            if (!captchaModel.isClick()) {
-                captchaModel.setClick(true);
-                captchaService.getMapActions().put(player.getName(), captchaModel);
+            if (e.getSlot() >= 0) {
+                ItemStack item = e.getInventory().getItem(e.getSlot());
 
-                new Thread(() -> {
-                    if (e.getSlot() >= 0) {
-                        ItemStack item = e.getInventory().getItem(e.getSlot());
+                if (item != null &&
+                        !(e.getInventory().getItem(e.getSlot()).getType() == Material.SLIME_BLOCK)) {
+                    ItemStack done = new ItemStack(Material.SLIME_BLOCK, 1);
+                    ItemMeta meta = done.getItemMeta();
+                    meta.setDisplayName(plugin.getConfig().getString("Captcha.nameSuccessItem",
+                            "Not found String [Captcha.nameSuccessItem] in config.yml"));
 
-                        if (item != null &&
-                                !(e.getInventory().getItem(e.getSlot()).getType() == Material.STAINED_CLAY &&
-                                        e.getInventory().getItem(e.getSlot()).getType().getMaxDurability() == 14)) {
-                            ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
-                            ItemMeta meta = done.getItemMeta();
-                            meta.setDisplayName(plugin.getConfig().getString("Captcha.nameSuccessItem",
-                                    "Not found String [Captcha.nameSuccessItem] in config.yml"));
+                    done.setItemMeta(meta);
 
-                            done.setItemMeta(meta);
+                    e.getInventory().setItem(e.getSlot(), done);
+                    captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
+                    captchaService.getMapActions().put(player.getName(), captchaModel);
 
-                            e.getInventory().setItem(e.getSlot(), done);
-                            captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
-                            captchaService.getMapActions().put(player.getName(), captchaModel);
-
-                            if (captchaModel.getCountDoneClick() >= captchaService.getCountDone()) {
-                                player.closeInventory();
-                                captchaService.removeTypeCaptcha(player);
-                                playerService.verify(player, false);
-                                return;
-                            }
-
-                            if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE ||
-                                    captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM) {
-                                if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE) {
-                                    e.getInventory().setItem(e.getSlot(), null);
-                                }
-                                captchaService.nextShow(e);
-                            }
-                        } else {
-                            captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
-                            captchaService.getMapActions().put(player.getName(), captchaModel);
-                        }
-
-                        if (captchaModel.getCountMissClick() > captchaService.getCountMiss()) {
-                            printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
-                                    "Not found string [KickMessages.youBot]"));
-                            captchaService.getMapActions().remove(player.getName());
-                        }
-                        try {
-                            Thread.sleep(120);
-                        } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        captchaModel.setFastClick(0);
-                        captchaModel.setClick(false);
-                        captchaService.getMapActions().put(player.getName(), captchaModel);
-                    } else {
-                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
-                                "Not found string [KickMessages.youBot]"));
-                        captchaService.getMapActions().remove(player.getName());
+                    if (captchaModel.getCountDoneClick() >= captchaService.getCountDone()) {
+                        player.closeInventory();
+                        captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
+                        playerService.verify(player, false);
+                        return;
                     }
-                }).start();
-            } else {
-                captchaModel.setFastClick(captchaModel.getFastClick() + 1);
-                captchaService.getMapActions().put(player.getName(), captchaModel);
-                if (captchaModel.getFastClick() > 10) {
+
+                    if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE ||
+                            captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM) {
+                        if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE) {
+                            e.getInventory().setItem(e.getSlot(), null);
+                        }
+                        captchaService.nextShow(e);
+                    }
+                } else {
+                    captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
+                    captchaService.getMapActions().put(player.getName(), captchaModel);
+                }
+
+                if (captchaService.getMapActions().get(player.getName()).getCountMissClick() >
+                        captchaService.getCountMiss()) {
                     printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
                             "Not found string [KickMessages.youBot]"));
                     captchaService.getMapActions().remove(player.getName());
                 }
+
+                captchaService.getMapActions().put(player.getName(), captchaModel);
+            } else {
+                printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                        "Not found string [KickMessages.youBot]"));
+                captchaService.getMapActions().remove(player.getName());
             }
         }
     }

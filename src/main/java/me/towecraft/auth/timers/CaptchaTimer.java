@@ -50,7 +50,7 @@ public class CaptchaTimer /*implements TimerKick*/ {
                         captchaService.getMapActions().remove(player.getName());
                         removeTimer(player);
                         if (player.isOnline())
-                            printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                            printMessage.kickMessage(player.getPlayer(), fileMessages.getMSG().getString("KickMessages.youBot",
                                     "Not found string [KickMessages.youBot]"));
                     }
                 }

@@ -146,9 +146,9 @@ public class RecoveryService {
                                 return;
                             }
 
-                            ItemStack item = new ItemStack(Material.getMaterial(
+                            ItemStack item = new ItemStack(Material.valueOf(
                                     plugin.getConfig().getString("SMTP.recovery.item.type",
-                                            "Not found String [SMTP.recovery.item.type] in config.yml")), 1);
+                                            "WATCH")), 1);
                             ItemMeta meta = item.getItemMeta();
                             meta.setDisplayName(plugin.getConfig().getString("SMTP.recovery.item.displayName",
                                     "Not found String [SMTP.recovery.item.displayName] in config.yml"));

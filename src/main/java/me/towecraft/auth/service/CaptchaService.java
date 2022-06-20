@@ -51,6 +51,7 @@ public class CaptchaService {
                     plugin.getConfig().getString("Captcha.nameCaptcha",
                             "Not found String [Captcha.nameCaptcha] in config.yml"));
 
+            removeTypeCaptcha(player);
             if (currentTypeCaptchaMap.get(player.getName()) == null) {
                 if (typeCaptcha == TypeCaptcha.RANDOM) {
                     currentTypeCaptchaMap.put(player.getName(),
@@ -62,9 +63,9 @@ public class CaptchaService {
                 }
             }
 
-            mapActions.get(player.getName()).setCountDoneClick(0);
+            mapActions.put(player.getName(), new CaptchaModel());
 
-            ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemStack itemStackClick = new ItemStack(Material.REDSTONE_BLOCK, 1);
             ItemMeta meta = itemStackClick.getItemMeta();
             meta.setDisplayName(plugin.getConfig().getString("Captcha.nameItem",
                     "Not found String [Captcha.nameItem] in config.yml"));
@@ -97,12 +98,18 @@ public class CaptchaService {
     }
 
     public void nextShow(InventoryClickEvent e) {
-        ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+        int position = (int) (Math.random() * 54);
+
+        if (e.getInventory().getItem(position) != null)
+            nextShow(e);
+
+        ItemStack itemStackClick = new ItemStack(Material.REDSTONE_BLOCK, 1);
         ItemMeta metaClick = itemStackClick.getItemMeta();
         metaClick.setDisplayName(plugin.getConfig().getString("Captcha.nameItem",
                 "Not found String [Captcha.nameItem] in config.yml"));
         itemStackClick.setItemMeta(metaClick);
-        e.getInventory().setItem((int) (Math.random() * 54), itemStackClick);
+
+        e.getInventory().setItem(position, itemStackClick);
         ((Player) e.getWhoClicked()).updateInventory();
     }
 

@@ -54,26 +54,32 @@ public class PlayerService {
 
     private String serverConnect;
     private int timeSession;
+    private boolean requiredEmailRegister;
 
     @PostConstruct
     private void init() {
-        serverConnect = plugin.getConfig().getString("General.nextConnect", "Hub");
+        serverConnect = plugin.getConfig().getString("General.nextConnect");
+        if (serverConnect == null)
+            throw new RuntimeException("Not found [General.nextConnect] in config.yml");
         timeSession = plugin.getConfig().getInt("General.timeSessions", 1800);
+        requiredEmailRegister = plugin.getConfig().getBoolean("SMTP.enable", false);
     }
 
     public void verify(Player player, boolean isVerifyCaptcha) {
 
-        if (isVerifyCaptcha)
-            captchaService.getMapActions().put(player.getName(), new CaptchaModel());
-        else
+        if (!isVerifyCaptcha)
             captchaTimer.removeTimer(player);
 
         playerRepository.findByUsername(player.getName(), result -> {
             if (player.isOnline()) {
                 if (result.isPresent()) {
                     if (result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName())) {
-                        if (timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() <=
-                                new Date().getTime() - (timeSession * 1000L)) {
+                        if (timeSession <= 0) {
+                            captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
+                            printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
+                            loginTimer.regTimer(player);
+                        } else if (result.get().getPlayerAuth().getLastLogin().getTime() <=
+                                new Date().getTime() - timeSession * 1000L) {
                             captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
                             loginTimer.regTimer(player);
                             printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
@@ -111,7 +117,9 @@ public class PlayerService {
                             }
                         }.runTaskLater(plugin, 10L);
                     } else {
-                        printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.register"));
+                        printMessage.sendMessage(player, requiredEmailRegister ?
+                                fileMessages.getMSG().getStringList("AutoMessages.registerWithEmail")
+                                : fileMessages.getMSG().getStringList("AutoMessages.register"));
                         registerTimer.regTimer(player);
                     }
                 }

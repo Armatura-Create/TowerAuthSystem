@@ -25,7 +25,7 @@ public class LoginTimer /*implements TimerKick*/ {
     private FileMessages fileMessages;
 
     private Map<Player, BukkitRunnable> timers;
-    private Map<String, BukkitRunnable> timeLevels;
+    private Map<Player, BukkitRunnable> timeLevels;
     private int time;
 
     @PostConstruct
@@ -43,13 +43,13 @@ public class LoginTimer /*implements TimerKick*/ {
                 if (timers.containsKey(player)) {
                     removeTimer(player);
                     if (player.isOnline()) {
-                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
+                        printMessage.kickMessage(player.getPlayer(), fileMessages.getMSG().getString("KickMessages.timeoutAuth",
                                 "Not found string [KickMessages.timeoutAuth]"));
                     }
                 }
             }
         });
-        timers.get(player.getName()).runTaskLater(plugin, time * 20L);
+        timers.get(player).runTaskLater(plugin, time * 20L);
 
         player.setLevel(time);
         BukkitRunnable timeLevel = new BukkitRunnable() {
@@ -60,7 +60,7 @@ public class LoginTimer /*implements TimerKick*/ {
         };
         timeLevel.runTaskTimer(plugin, 0, 20L);
 
-        timeLevels.put(player.getName(), timeLevel);
+        timeLevels.put(player, timeLevel);
     }
 
 //    @Override

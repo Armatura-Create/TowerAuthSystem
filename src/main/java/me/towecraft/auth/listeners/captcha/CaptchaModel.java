@@ -6,6 +6,4 @@ import lombok.Data;
 public class CaptchaModel {
     private int countMissClick;
     private int countDoneClick;
-    private int fastClick;
-    private boolean isClick;
 }
