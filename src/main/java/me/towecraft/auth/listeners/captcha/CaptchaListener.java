@@ -82,38 +82,40 @@ public class CaptchaListener implements Listener {
                             captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
                             captchaService.getMapActions().put(player.getName(), captchaModel);
                         } else {
-                            if (!e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName().equals("§aВыполнено")) {
+                            if (!e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName()
+                                    .contains(plugin.getConfig().getString("Captcha.nameSuccessItem",
+                                            "Not found String [Captcha.nameSuccessItem] in config.yml"))) {
                                 ItemStack done = new ItemStack(Material.STAINED_CLAY, 1, (byte) 5);
                                 ItemMeta meta = done.getItemMeta();
-                                meta.setDisplayName("§aВыполнено");
+                                meta.setDisplayName(plugin.getConfig().getString("Captcha.nameSuccessItem",
+                                        "Not found String [Captcha.nameSuccessItem] in config.yml"));
 
                                 done.setItemMeta(meta);
-                                if (!done.equals(e.getInventory().getItem(e.getSlot()))) {
-                                    e.getInventory().setItem(e.getSlot(), done);
-                                    captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
-                                    captchaService.getMapActions().put(player.getName(), captchaModel);
-                                    if (captchaModel.getCountDoneClick() >= 3) {
-                                        player.closeInventory();
-                                        captchaService.removeTypeCaptcha(player);
-                                        playerService.verify(player, false);
-                                    }
+
+                                e.getInventory().setItem(e.getSlot(), done);
+                                captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
+                                captchaService.getMapActions().put(player.getName(), captchaModel);
+
+                                if (captchaModel.getCountDoneClick() >= captchaService.getCountDone()) {
+                                    player.closeInventory();
+                                    captchaService.removeTypeCaptcha(player);
+                                    playerService.verify(player, false);
+                                    return;
                                 }
-                                if (captchaService.getTypeCaptcha(player).getType() == 2 ||
-                                        captchaService.getTypeCaptcha(player).getType() == 1) {
-                                    if (captchaService.getTypeCaptcha(player).getType() == 1) {
+
+                                if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE ||
+                                        captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM) {
+                                    if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE) {
                                         e.getInventory().setItem(e.getSlot(), null);
                                     }
-
-                                    ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                                    ItemMeta metaClick = itemStackClick.getItemMeta();
-                                    metaClick.setDisplayName("§cНажмите на меня");
-                                    itemStackClick.setItemMeta(metaClick);
-                                    e.getInventory().setItem((int) (Math.random() * 54), itemStackClick);
-                                    player.updateInventory();
+                                    captchaService.nextShow(e);
                                 }
+                            } else {
+                                captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
+                                captchaService.getMapActions().put(player.getName(), captchaModel);
                             }
                         }
-                        if (captchaModel.getCountMissClick() > 3) {
+                        if (captchaModel.getCountMissClick() > captchaService.getCountMiss()) {
                             printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
                                     "Not found string [KickMessages.youBot]"));
                             captchaService.getMapActions().remove(player.getName());

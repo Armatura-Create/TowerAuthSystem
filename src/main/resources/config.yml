@@ -1,20 +1,26 @@
 General:
-  updateInterval: 2 #Update servers from CloudNet (In sec)
-  captchaType: 4 #type captcha 1, 2, 3, 4 or 0 - disable (4 - random (1,2,3))
   nextConnect: Hub #Name server to connect when success login/registration
-  timeSessions: 0 #Autologin when reconnect (In sec)
+  timeSessions: 0 #Autologin when reconnect (In sec). If 0 - equals for ip last connect
   timeLogin: 30 #If user not login in this time - kick him (In sec)
   timeReg: 30 #If user not registration in this time - kick him (In sec)
-  timeCaptcha: 30 #If user not success captcha in this time - kick him (In sec)
-  timeRecovery: 60 #If user not success recovery password in this time - kick him (In sec)
+  updateInterval: 2 #Update servers from CloudNet (In sec)
+
+Captcha:
+  type: 4 #type captcha 1, 2, 3, 4 or 0 - disable (4 - random (1,2,3))
+  timeKick: 10 #If user not success captcha in this time - kick him (In sec)
+  countCaptcha: 3
+  countMissClick: 3
+  nameCaptcha: Проверка на бота
+  nameItem: §cНажмите на меня
+  nameSuccessItem: §aВыполнено
 
 Database:
-  host: 152.70.52.190
+  host: 127.0.0.1
   port: 3306
-  database: TCBack
+  database: nameBase
   ssl: false
-  user: root
-  password: oz7WXg3hpw6JxGmwVOo9F!ObGBf4tNf7c47gDgbQPvmY6%iA5w
+  user: user
+  password: password
   hikari:
     minConnections: 10
     maxConnections: 100
@@ -24,14 +30,21 @@ SMTP:
   enable: true
   host: smtp.gmail.com
   port: 465
-  user: towercraftsup@gmail.com
-  password: scunerjpvfjpxpmg
+  user: user
+  password: password
+  recovery:
+    titleEmail: Восстановление пароля
+    timeKick: 60 #If user not success recovery password in this time - kick him (In sec)
+    item:
+      type: WATCH
+      slot: 8
+      displayName: §eВосстановление пароля
 
 Username:
   excludeSymbol:
     - '$'
     - ' '
-    - "-"
+    - '-'
 
 Password:
   minLength: 6

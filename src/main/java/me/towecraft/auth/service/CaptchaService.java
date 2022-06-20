@@ -6,6 +6,7 @@ import me.towecraft.auth.listeners.captcha.TypeCaptcha;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,19 +26,26 @@ public class CaptchaService {
     private TypeCaptcha typeCaptcha;
     private Map<String, TypeCaptcha> currentTypeCaptchaMap;
 
+    private int countDone;
+    private int countMiss;
+
     @PostConstruct
     public void init() {
         typeCaptcha = Arrays.stream(TypeCaptcha.values())
-                .filter(t -> t.getType() == plugin.getConfig().getInt("General.captchaType", 0))
+                .filter(t -> t.getType() == plugin.getConfig().getInt("Captcha.type", 0))
                 .findFirst().orElse(TypeCaptcha.NONE);
 
         mapActions = new ConcurrentHashMap<>();
         currentTypeCaptchaMap = new ConcurrentHashMap<>();
+        countDone = plugin.getConfig().getInt("Captcha.countCaptcha", 3);
+        countMiss = plugin.getConfig().getInt("Captcha.countMissClick", 3);
     }
 
     public void showCaptcha(Player player) {
         if (player.isOnline()) {
-            Inventory inventory = Bukkit.createInventory(null, 6 * 9, "Проверка на бота");
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9,
+                    plugin.getConfig().getString("Captcha.nameCaptcha",
+                            "Not found String [Captcha.nameCaptcha] in config.yml"));
 
             if (currentTypeCaptchaMap.get(player.getName()) == null) {
                 if (typeCaptcha == TypeCaptcha.RANDOM) {
@@ -50,12 +58,16 @@ public class CaptchaService {
                 }
             }
 
-            System.out.println(currentTypeCaptchaMap.get(player.getName()).name());
+            ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta meta = itemStackClick.getItemMeta();
+            meta.setDisplayName(plugin.getConfig().getString("Captcha.nameItem",
+                    "Not found String [Captcha.nameItem] in config.yml"));
+            itemStackClick.setItemMeta(meta);
 
             if (currentTypeCaptchaMap.get(player.getName()) == TypeCaptcha.SHOW_ALL_ITEM) {
                 List<Integer> random = new ArrayList<>();
 
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < countDone; i++) {
                     int position = (int) (Math.random() * 54);
                     int finalPosition = position;
                     if (random.stream().anyMatch(s -> s == finalPosition))
@@ -63,23 +75,24 @@ public class CaptchaService {
                     random.add(position);
                 }
 
-                ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                ItemMeta meta = itemStackClick.getItemMeta();
-                meta.setDisplayName("§cНажмите на меня");
-                itemStackClick.setItemMeta(meta);
                 for (Integer integer : random) {
                     inventory.setItem(integer, itemStackClick);
                 }
-            } else {
-                ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
-                ItemMeta meta = itemStackClick.getItemMeta();
-                meta.setDisplayName("§cНажмите на меня");
-                itemStackClick.setItemMeta(meta);
+            } else
                 inventory.setItem((int) (Math.random() * 54), itemStackClick);
-            }
 
             player.openInventory(inventory);
         }
+    }
+
+    public void nextShow(InventoryClickEvent e) {
+        ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+        ItemMeta metaClick = itemStackClick.getItemMeta();
+        metaClick.setDisplayName(plugin.getConfig().getString("Captcha.nameItem",
+                "Not found String [Captcha.nameItem] in config.yml"));
+        itemStackClick.setItemMeta(metaClick);
+        e.getInventory().setItem((int) (Math.random() * 54), itemStackClick);
+        ((Player) e.getWhoClicked()).updateInventory();
     }
 
     public Map<String, CaptchaModel> getMapActions() {
@@ -98,4 +111,11 @@ public class CaptchaService {
         currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
     }
 
+    public int getCountDone() {
+        return countDone;
+    }
+
+    public int getCountMiss() {
+        return countMiss;
+    }
 }

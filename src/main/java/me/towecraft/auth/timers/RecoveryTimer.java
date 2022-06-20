@@ -32,7 +32,7 @@ public class RecoveryTimer {
     public void init() {
         this.timers = new ConcurrentHashMap<>();
         this.timeLevels = new ConcurrentHashMap<>();
-        this.time = plugin.getConfig().getInt("General.timeRecovery", 60); //Sec
+        this.time = plugin.getConfig().getInt("SMTP.recovery.timeKick", 60); //Sec
     }
 
     public void regTimer(Player player) {

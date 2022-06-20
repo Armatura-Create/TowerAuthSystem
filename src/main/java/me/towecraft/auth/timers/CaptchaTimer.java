@@ -36,7 +36,7 @@ public class CaptchaTimer {
     public void init() {
         this.timers = new ConcurrentHashMap<>();
         this.timeLevels = new ConcurrentHashMap<>();
-        this.time = plugin.getConfig().getInt("General.timeCaptcha", 10); //Sec
+        this.time = plugin.getConfig().getInt("Captcha.timeKick", 10); //Sec
     }
 
     public void regTimer(Player player) {

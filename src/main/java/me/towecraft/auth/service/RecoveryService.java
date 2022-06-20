@@ -24,8 +24,6 @@ import java.nio.file.Files;
 import java.util.Properties;
 import java.util.Random;
 
-import static org.bukkit.Material.WATCH;
-
 @Component
 public class RecoveryService {
 
@@ -102,6 +100,8 @@ public class RecoveryService {
 
                 if (!form.exists()) {
                     logger.log("Not found form.html");
+                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
+                            "Not found string [Commands.recovery.error] in Message.yml"));
                     return;
                 }
 
@@ -110,7 +110,8 @@ public class RecoveryService {
 
                     MimeMessage message = new MimeMessage(session);
                     message.addRecipient(Message.RecipientType.TO, new InternetAddress(p.getEmail()));
-                    message.setSubject("Восстановление пароля");
+                    message.setSubject(plugin.getConfig().getString("SMTP.recovery.titleEmail",
+                            "Not found String [SMTP.recovery.titleEmail] in config.yml"));
                     message.setText(html.replace("%code%", code).replace("%player%", player.getName()),
                             "utf-8", "html");
 
@@ -123,6 +124,8 @@ public class RecoveryService {
                     recoveryTimer.regTimer(player);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
+                            "Not found string [Commands.recovery.error] in Message.yml"));
                 }
             } else {
                 printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.alreadySendCode",
@@ -143,12 +146,15 @@ public class RecoveryService {
                                 return;
                             }
 
-                            ItemStack item = new ItemStack(Material.getMaterial(String.valueOf(WATCH)), 1);
+                            ItemStack item = new ItemStack(Material.getMaterial(
+                                    plugin.getConfig().getString("SMTP.recovery.item.type",
+                                            "Not found String [SMTP.recovery.item.type] in config.yml")), 1);
                             ItemMeta meta = item.getItemMeta();
-                            meta.setDisplayName("§eВосстановление пароля");
+                            meta.setDisplayName(plugin.getConfig().getString("SMTP.recovery.item.displayName",
+                                    "Not found String [SMTP.recovery.item.displayName] in config.yml"));
                             item.setItemMeta(meta);
 
-                            player.getInventory().setItem(8, item);
+                            player.getInventory().setItem(plugin.getConfig().getInt("SMTP.recovery.item.slot", 8), item);
                             player.updateInventory();
                         }
                     }.runTaskLaterAsynchronously(plugin, 10L);
