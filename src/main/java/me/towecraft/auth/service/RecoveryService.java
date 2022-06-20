@@ -120,7 +120,7 @@ public class RecoveryService {
                     printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.recovery"));
 
                     player.getInventory().clear();
-                    loginTimer.removeTimer(player.getName());
+                    loginTimer.removeTimer(player);
                     recoveryTimer.regTimer(player);
                 } catch (Exception ex) {
                     ex.printStackTrace();

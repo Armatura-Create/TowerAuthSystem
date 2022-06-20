@@ -77,8 +77,8 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                                 .setRecoveryCode(null)
                                 .setLastLogin(new Date()), isLogin -> {
                             if (isLogin) {
-                                recoveryTimer.removeTimer(sender.getName());
-                                connectionService.connect((Player) sender,
+                                recoveryTimer.removeTimer(player);
+                                connectionService.connect(player,
                                         plugin.getConfig().getString("General.nextConnect", "Hub"),
                                         TypeConnect.MIN);
                             } else {

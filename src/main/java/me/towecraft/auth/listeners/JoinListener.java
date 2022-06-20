@@ -42,7 +42,7 @@ public class JoinListener implements Listener {
 
     @PostConstruct
     public void init() {
-        isCaptcha = plugin.getConfig().getInt("General.captchaType", 0) > 0;
+        isCaptcha = plugin.getConfig().getInt("Captcha.type", 0) > 0;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

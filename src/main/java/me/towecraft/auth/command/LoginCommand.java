@@ -60,20 +60,21 @@ public class LoginCommand implements CommandExecutor {
             @Override
             public void run() {
                 if (sender instanceof Player) {
+                    Player player = ((Player) sender).getPlayer();
 
-                    playerRepository.findByUsername(sender.getName(), result -> {
+                    playerRepository.findByUsername(player.getName(), result -> {
                         if (result.isPresent()) {
                             if (args.length == 1) {
                                 if (hashUtil.match(args[0], result.get().getPassword())) {
-                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.successLogin",
+                                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.login.successLogin",
                                             "Not found string [Commands.login.successLogin]"));
 
                                     playerAuthRepository.saveLogin(result.get().getPlayerAuth()
                                             .setLastLogin(new Date())
-                                            .setIpLogin(((Player) sender).getAddress().getHostName()), isLogin -> {
+                                            .setIpLogin(player.getAddress().getHostName()), isLogin -> {
                                         if (isLogin) {
-                                            loginTimer.removeTimer(sender.getName());
-                                            connectionService.connect((Player) sender,
+                                            loginTimer.removeTimer(player);
+                                            connectionService.connect(player,
                                                     plugin.getConfig().getString("General.nextConnect", "Hub"),
                                                     TypeConnect.MIN);
                                         } else {
@@ -81,13 +82,13 @@ public class LoginCommand implements CommandExecutor {
                                         }
                                     });
                                 } else
-                                    printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.wrongPassword",
+                                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.login.wrongPassword",
                                             "Not found string [Commands.login.wrongPassword]"));
                             } else
-                                printMessage.sendMessage((Player) sender, fileMessages.getMSG().getString("Commands.login.wrongArgs",
+                                printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.login.wrongArgs",
                                         "Not found string [Commands.login.wrongArgs]"));
                         } else {
-                            printMessage.sendMessage((Player) sender, fileMessages.getMSG().getStringList("Commands.register.wrongArgs"));
+                            printMessage.sendMessage(player, fileMessages.getMSG().getStringList("Commands.register.wrongArgs"));
                         }
                     });
                 }

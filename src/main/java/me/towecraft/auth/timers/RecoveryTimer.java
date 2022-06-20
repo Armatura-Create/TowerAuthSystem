@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RecoveryTimer {
+public class RecoveryTimer /*implements TimerKick*/ {
 
     @Autowire
     private TAS plugin;
@@ -24,8 +24,8 @@ public class RecoveryTimer {
     @Autowire
     private PrintMessageService printMessage;
 
-    private Map<String, BukkitRunnable> timers;
-    private Map<String, BukkitRunnable> timeLevels;
+    private Map<Player, BukkitRunnable> timers;
+    private Map<Player, BukkitRunnable> timeLevels;
     private int time;
 
     @PostConstruct
@@ -35,19 +35,20 @@ public class RecoveryTimer {
         this.time = plugin.getConfig().getInt("SMTP.recovery.timeKick", 60); //Sec
     }
 
+//    @Override
     public void regTimer(Player player) {
-        this.timers.put(player.getName(), new BukkitRunnable() {
+        this.timers.put(player, new BukkitRunnable() {
             @Override
             public void run() {
-                if (timers.containsKey(player.getName())) {
-                    removeTimer(player.getName());
+                if (timers.containsKey(player)) {
+                    removeTimer(player);
                     if (player.isOnline())
                         printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutRecovery",
                                 "Not found string [KickMessages.timeRecovery]"));
                 }
             }
         });
-        timers.get(player.getName()).runTaskLater(plugin, time * 20L);
+        timers.get(player).runTaskLater(plugin, time * 20L);
 
         player.setLevel(time);
         BukkitRunnable timeLevel = new BukkitRunnable() {
@@ -57,17 +58,18 @@ public class RecoveryTimer {
             }
         };
         timeLevel.runTaskTimer(plugin, 0L, 20L);
-        timeLevels.put(player.getName(), timeLevel);
+        timeLevels.put(player, timeLevel);
     }
 
-    public void removeTimer(String playerName) {
-        if (timers.containsKey(playerName)) {
-            timers.get(playerName).cancel();
-            timers.remove(playerName);
+//    @Override
+    public void removeTimer(Player player) {
+        if (timers.containsKey(player)) {
+            timers.get(player).cancel();
+            timers.remove(player);
         }
-        if (timeLevels.containsKey(playerName)) {
-            timeLevels.get(playerName).cancel();
-            timeLevels.remove(playerName);
+        if (timeLevels.containsKey(player)) {
+            timeLevels.get(player).cancel();
+            timeLevels.remove(player);
         }
     }
 }

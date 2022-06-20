@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RegisterTimer {
+public class RegisterTimer /*implements TimerKick*/ {
 
     @Autowire
     private TAS plugin;
@@ -27,8 +27,8 @@ public class RegisterTimer {
     @Autowire
     private FileMessages fileMessages;
 
-    private Map<String, BukkitRunnable> timers;
-    private Map<String, BukkitRunnable> timeLevels;
+    private Map<Player, BukkitRunnable> timers;
+    private Map<Player, BukkitRunnable> timeLevels;
     private int time;
 
     @PostConstruct
@@ -38,26 +38,26 @@ public class RegisterTimer {
         this.time = plugin.getConfig().getInt("General.timeReg", 30); //Sec
     }
 
+//    @Override
     public void regTimer(Player player) {
-        timers.put(player.getName(), new BukkitRunnable() {
+        timers.put(player, new BukkitRunnable() {
             @Override
             public void run() {
-                if (timers.containsKey(player.getName())) {
+                if (timers.containsKey(player)) {
                     try {
-                        removeTimer(player.getName());
-                        playerRepository.findByUsername(player.getName(), result -> {
-                            if (!result.isPresent() && player.isOnline()) {
-                                printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
-                                        "Not found string [KickMessages.timeoutAuth]"));
-                            }
-                        });
+                        removeTimer(player);
+                        if (player.isOnline()) {
+                            printMessage.kickMessage(player,
+                                    fileMessages.getMSG().getString("KickMessages.timeoutAuth",
+                                            "Not found string [KickMessages.timeoutAuth]"));
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             }
         });
-        timers.get(player.getName()).runTaskLater(plugin, time * 20L);
+        timers.get(player).runTaskLater(plugin, time * 20L);
 
         player.setLevel(time);
         BukkitRunnable timeLevel = new BukkitRunnable() {
@@ -67,17 +67,18 @@ public class RegisterTimer {
             }
         };
         timeLevel.runTaskTimer(plugin, 0, 20L);
-        timeLevels.put(player.getName(), timeLevel);
+        timeLevels.put(player, timeLevel);
     }
 
-    public void removeTimer(String playerName) {
-        if (timers.containsKey(playerName)) {
-            timers.get(playerName).cancel();
-            timers.remove(playerName);
+//    @Override
+    public void removeTimer(Player player) {
+        if (timers.containsKey(player)) {
+            timers.get(player).cancel();
+            timers.remove(player);
         }
-        if (timeLevels.containsKey(playerName)) {
-            timeLevels.get(playerName).cancel();
-            timeLevels.remove(playerName);
+        if (timeLevels.containsKey(player)) {
+            timeLevels.get(player);
+            timeLevels.remove(player);
         }
     }
 }

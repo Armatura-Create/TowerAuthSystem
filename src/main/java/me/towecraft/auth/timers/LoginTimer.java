@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class LoginTimer {
+public class LoginTimer /*implements TimerKick*/ {
 
     @Autowire
     private TAS plugin;
@@ -24,7 +24,7 @@ public class LoginTimer {
     @Autowire
     private FileMessages fileMessages;
 
-    private Map<String, BukkitRunnable> timers;
+    private Map<Player, BukkitRunnable> timers;
     private Map<String, BukkitRunnable> timeLevels;
     private int time;
 
@@ -35,12 +35,13 @@ public class LoginTimer {
         this.time = plugin.getConfig().getInt("General.timeLogin", 30); //Sec
     }
 
+//    @Override
     public void regTimer(Player player) {
-        timers.put(player.getName(), new BukkitRunnable() {
+        timers.put(player, new BukkitRunnable() {
             @Override
             public void run() {
-                if (timers.containsKey(player.getName())) {
-                    removeTimer(player.getName());
+                if (timers.containsKey(player)) {
+                    removeTimer(player);
                     if (player.isOnline()) {
                         printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.timeoutAuth",
                                 "Not found string [KickMessages.timeoutAuth]"));
@@ -62,14 +63,15 @@ public class LoginTimer {
         timeLevels.put(player.getName(), timeLevel);
     }
 
-    public void removeTimer(String playerName) {
-        if (timers.containsKey(playerName)) {
-            timers.get(playerName).cancel();
-            timers.remove(playerName);
+//    @Override
+    public void removeTimer(Player player) {
+        if (timers.containsKey(player)) {
+            timers.get(player).cancel();
+            timers.remove(player);
         }
-        if (timeLevels.containsKey(playerName)) {
-            timeLevels.get(playerName).cancel();
-            timeLevels.remove(playerName);
+        if (timeLevels.containsKey(player)) {
+            timeLevels.get(player).cancel();
+            timeLevels.remove(player);
         }
     }
 }

@@ -66,7 +66,7 @@ public class PlayerService {
         if (isVerifyCaptcha)
             captchaService.getMapActions().put(player.getName(), new CaptchaModel());
         else
-            captchaTimer.removeTimer(player.getName());
+            captchaTimer.removeTimer(player);
 
         playerRepository.findByUsername(player.getName(), result -> {
             if (player.isOnline()) {
@@ -85,7 +85,7 @@ public class PlayerService {
                                 public void run() {
                                     connectionService.connect(player, serverConnect, TypeConnect.MIN);
                                     playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
-                                    loginTimer.removeTimer(player.getName());
+                                    loginTimer.removeTimer(player);
                                 }
                             }.runTaskLater(plugin, 20L);
                         }

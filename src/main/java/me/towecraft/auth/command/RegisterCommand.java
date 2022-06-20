@@ -134,7 +134,7 @@ public class RegisterCommand implements CommandExecutor {
                             printMessage.sendMessage(player,
                                     fileMessages.getMSG().getString("Commands.register.successRegister",
                                             "Not found [Commands.register.successRegister] in Message.yml"));
-                            registerTimer.removeTimer(player.getName());
+                            registerTimer.removeTimer(player);
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {

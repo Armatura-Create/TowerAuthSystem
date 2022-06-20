@@ -38,6 +38,10 @@ public class CaptchaService {
         mapActions = new ConcurrentHashMap<>();
         currentTypeCaptchaMap = new ConcurrentHashMap<>();
         countDone = plugin.getConfig().getInt("Captcha.countCaptcha", 3);
+
+        if (countDone > 54)
+            countDone = 54;
+
         countMiss = plugin.getConfig().getInt("Captcha.countMissClick", 3);
     }
 
@@ -51,12 +55,14 @@ public class CaptchaService {
                 if (typeCaptcha == TypeCaptcha.RANDOM) {
                     currentTypeCaptchaMap.put(player.getName(),
                             Arrays.stream(TypeCaptcha.values())
-                                    .filter(t -> t.getType() == ((int) (Math.random() * 5) + 1))
+                                    .filter(t -> t.getType() == ((int) (Math.random() * 3) + 1))
                                     .findFirst().orElse(TypeCaptcha.SHOW_ALL_ITEM));
                 } else {
                     currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
                 }
             }
+
+            mapActions.get(player.getName()).setCountDoneClick(0);
 
             ItemStack itemStackClick = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta meta = itemStackClick.getItemMeta();
@@ -65,17 +71,7 @@ public class CaptchaService {
             itemStackClick.setItemMeta(meta);
 
             if (currentTypeCaptchaMap.get(player.getName()) == TypeCaptcha.SHOW_ALL_ITEM) {
-                List<Integer> random = new ArrayList<>();
-
-                for (int i = 0; i < countDone; i++) {
-                    int position = (int) (Math.random() * 54);
-                    int finalPosition = position;
-                    if (random.stream().anyMatch(s -> s == finalPosition))
-                        position = (int) (Math.random() * 54);
-                    random.add(position);
-                }
-
-                for (Integer integer : random) {
+                for (Integer integer : generatePositions(new ArrayList<>())) {
                     inventory.setItem(integer, itemStackClick);
                 }
             } else
@@ -83,6 +79,21 @@ public class CaptchaService {
 
             player.openInventory(inventory);
         }
+    }
+
+    private List<Integer> generatePositions(List<Integer> result) {
+
+        int position = (int) (Math.random() * 54);
+
+        if (result.stream().anyMatch(p -> p == position))
+            result = generatePositions(result);
+        else
+            result.add(position);
+
+        if (result.size() < countDone)
+            result = generatePositions(result);
+
+        return result;
     }
 
     public void nextShow(InventoryClickEvent e) {
