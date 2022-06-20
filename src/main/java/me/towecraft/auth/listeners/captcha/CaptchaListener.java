@@ -51,7 +51,7 @@ public class CaptchaListener implements Listener {
                     Player player = (Player) e.getPlayer();
                     if (player.isOnline()) {
                         if (captchaService.getMapActions().get(e.getPlayer().getName()) != null &&
-                                captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < 3) {
+                                captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < captchaService.getCountDone()) {
                             if (captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE) {
                                 captchaService.showCaptcha(player);
                             }
