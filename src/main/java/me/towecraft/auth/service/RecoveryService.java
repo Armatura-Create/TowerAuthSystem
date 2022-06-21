@@ -91,6 +91,9 @@ public class RecoveryService {
 
     public void send(Player player) {
 
+        player.getInventory().clear();
+        printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.recovery"));
+
         playerRepository.findByUsername(player.getName(), result -> result.ifPresent(p -> {
             if (p.getPlayerAuth().getRecoveryCode() == null) {
                 String code = getRandomCode();
@@ -102,6 +105,7 @@ public class RecoveryService {
                     logger.log("Not found form.html");
                     printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
                             "Not found string [Commands.recovery.error] in Message.yml"));
+                    getItem(player);
                     return;
                 }
 
@@ -117,15 +121,14 @@ public class RecoveryService {
 
                     Transport.send(message);
                     logger.log("Message sent successfully to - " + p.getEmail());
-                    printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.recovery"));
 
-                    player.getInventory().clear();
                     loginTimer.removeTimer(player);
                     recoveryTimer.regTimer(player);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
                             "Not found string [Commands.recovery.error] in Message.yml"));
+                    getItem(player);
                 }
             } else {
                 printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.alreadySendCode",

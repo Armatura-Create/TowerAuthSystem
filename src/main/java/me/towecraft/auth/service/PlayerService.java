@@ -74,11 +74,7 @@ public class PlayerService {
             if (player.isOnline()) {
                 if (result.isPresent()) {
                     if (result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName())) {
-                        if (timeSession <= 0) {
-                            captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
-                            printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
-                            loginTimer.regTimer(player);
-                        } else if (result.get().getPlayerAuth().getLastLogin().getTime() <=
+                       if (timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() <=
                                 new Date().getTime() - timeSession * 1000L) {
                             captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
                             loginTimer.regTimer(player);
