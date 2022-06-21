@@ -22,9 +22,9 @@ public class CaptchaService {
 
     @Autowire
     private TAS plugin;
-    private Map<String, CaptchaModel> mapActions;
+    private Map<Player, CaptchaModel> mapActions;
     private TypeCaptcha typeCaptcha;
-    private Map<String, TypeCaptcha> currentTypeCaptchaMap;
+    private Map<Player, TypeCaptcha> currentTypeCaptchaMap;
 
     private int countDone;
     private int countMiss;
@@ -52,18 +52,18 @@ public class CaptchaService {
                             "Not found String [Captcha.nameCaptcha] in config.yml"));
 
             removeTypeCaptcha(player);
-            if (currentTypeCaptchaMap.get(player.getName()) == null) {
+            if (currentTypeCaptchaMap.get(player) == null) {
                 if (typeCaptcha == TypeCaptcha.RANDOM) {
-                    currentTypeCaptchaMap.put(player.getName(),
+                    currentTypeCaptchaMap.put(player,
                             Arrays.stream(TypeCaptcha.values())
                                     .filter(t -> t.getType() == ((int) (Math.random() * 3) + 1))
                                     .findFirst().orElse(TypeCaptcha.SHOW_ALL_ITEM));
                 } else {
-                    currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
+                    currentTypeCaptchaMap.put(player, typeCaptcha);
                 }
             }
 
-            mapActions.put(player.getName(), new CaptchaModel());
+            mapActions.put(player, new CaptchaModel());
 
             ItemStack itemStackClick = new ItemStack(Material.REDSTONE_BLOCK, 1);
             ItemMeta meta = itemStackClick.getItemMeta();
@@ -71,7 +71,7 @@ public class CaptchaService {
                     "Not found String [Captcha.nameItem] in config.yml"));
             itemStackClick.setItemMeta(meta);
 
-            if (currentTypeCaptchaMap.get(player.getName()) == TypeCaptcha.SHOW_ALL_ITEM) {
+            if (currentTypeCaptchaMap.get(player) == TypeCaptcha.SHOW_ALL_ITEM) {
                 for (Integer integer : generatePositions(new ArrayList<>())) {
                     inventory.setItem(integer, itemStackClick);
                 }
@@ -113,20 +113,20 @@ public class CaptchaService {
         ((Player) e.getWhoClicked()).updateInventory();
     }
 
-    public Map<String, CaptchaModel> getMapActions() {
+    public Map<Player, CaptchaModel> getMapActions() {
         return mapActions;
     }
 
     public TypeCaptcha getTypeCaptcha(Player player) {
-        return currentTypeCaptchaMap.get(player.getName());
+        return currentTypeCaptchaMap.get(player);
     }
 
     public void removeTypeCaptcha(Player player) {
-        currentTypeCaptchaMap.remove(player.getName());
+        currentTypeCaptchaMap.remove(player);
     }
 
     public void setTypeCaptcha(Player player, TypeCaptcha typeCaptcha) {
-        currentTypeCaptchaMap.put(player.getName(), typeCaptcha);
+        currentTypeCaptchaMap.put(player, typeCaptcha);
     }
 
     public int getCountDone() {
@@ -135,5 +135,25 @@ public class CaptchaService {
 
     public int getCountMiss() {
         return countMiss;
+    }
+
+    public synchronized void incrementDone(Player player) {
+        CaptchaModel captchaModel = mapActions.get(player);
+        if (captchaModel == null)
+            mapActions.put(player, new CaptchaModel().setCountDoneClick(1));
+        else {
+            captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
+            mapActions.put(player, captchaModel);
+        }
+    }
+
+    public synchronized void incrementMiss(Player player) {
+        CaptchaModel captchaModel = mapActions.get(player);
+        if (captchaModel == null)
+            mapActions.put(player, new CaptchaModel().setCountMissClick(1));
+        else {
+            captchaModel.setCountDoneClick(captchaModel.getCountMissClick() + 1);
+            mapActions.put(player, captchaModel);
+        }
     }
 }

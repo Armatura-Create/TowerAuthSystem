@@ -50,8 +50,8 @@ public class CaptchaListener implements Listener {
                 if (e.getPlayer() != null && e.getPlayer() instanceof Player) {
                     Player player = (Player) e.getPlayer();
                     if (player.isOnline()) {
-                        if (captchaService.getMapActions().get(e.getPlayer().getName()) != null &&
-                                captchaService.getMapActions().get(e.getPlayer().getName()).getCountDoneClick() < captchaService.getCountDone()) {
+                        if (captchaService.getMapActions().get(player) != null &&
+                                captchaService.getMapActions().get(player).getCountDoneClick() < captchaService.getCountDone()) {
                             if (captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE) {
                                 captchaService.showCaptcha(player);
                             }
@@ -67,56 +67,51 @@ public class CaptchaListener implements Listener {
         if (e != null && e.getWhoClicked() instanceof Player) {
             Player player = (Player) e.getWhoClicked();
             e.setCancelled(true);
+            if (captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE) {
+                if (e.getSlot() >= 0) {
+                    ItemStack item = e.getInventory().getItem(e.getSlot());
 
-            CaptchaModel captchaModel = captchaService.getMapActions().get(player.getName());
+                    if (item != null &&
+                            !(e.getInventory().getItem(e.getSlot()).getType() == Material.SLIME_BLOCK)) {
+                        ItemStack done = new ItemStack(Material.SLIME_BLOCK, 1);
+                        ItemMeta meta = done.getItemMeta();
+                        meta.setDisplayName(plugin.getConfig().getString("Captcha.nameSuccessItem",
+                                "Not found String [Captcha.nameSuccessItem] in config.yml"));
 
-            if (e.getSlot() >= 0) {
-                ItemStack item = e.getInventory().getItem(e.getSlot());
+                        done.setItemMeta(meta);
 
-                if (item != null &&
-                        !(e.getInventory().getItem(e.getSlot()).getType() == Material.SLIME_BLOCK)) {
-                    ItemStack done = new ItemStack(Material.SLIME_BLOCK, 1);
-                    ItemMeta meta = done.getItemMeta();
-                    meta.setDisplayName(plugin.getConfig().getString("Captcha.nameSuccessItem",
-                            "Not found String [Captcha.nameSuccessItem] in config.yml"));
+                        e.getInventory().setItem(e.getSlot(), done);
+                        captchaService.incrementDone(player);
 
-                    done.setItemMeta(meta);
+                        if (captchaService.getMapActions().get(player).getCountDoneClick() >= captchaService.getCountDone()) {
+                            player.closeInventory();
+                            captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
+                            playerService.verify(player, false);
+                            return;
+                        }
 
-                    e.getInventory().setItem(e.getSlot(), done);
-                    captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
-                    captchaService.getMapActions().put(player.getName(), captchaModel);
-
-                    if (captchaModel.getCountDoneClick() >= captchaService.getCountDone()) {
-                        player.closeInventory();
-                        captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
-                        playerService.verify(player, false);
-                        return;
+                        if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE ||
+                                captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM) {
+                            if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE) {
+                                e.getInventory().setItem(e.getSlot(), null);
+                            }
+                            captchaService.nextShow(e);
+                        }
+                    } else {
+                        captchaService.incrementMiss(player);
                     }
 
-                    if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE ||
-                            captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM) {
-                        if (captchaService.getTypeCaptcha(player) == TypeCaptcha.SHOW_ONE_ITEM_HIDE_DONE) {
-                            e.getInventory().setItem(e.getSlot(), null);
-                        }
-                        captchaService.nextShow(e);
+                    if (captchaService.getMapActions().get(player).getCountMissClick() >
+                            captchaService.getCountMiss()) {
+                        printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
+                                "Not found string [KickMessages.youBot]"));
+                        captchaService.getMapActions().remove(player);
                     }
                 } else {
-                    captchaModel.setCountMissClick(captchaModel.getCountMissClick() + 1);
-                    captchaService.getMapActions().put(player.getName(), captchaModel);
-                }
-
-                if (captchaService.getMapActions().get(player.getName()).getCountMissClick() >
-                        captchaService.getCountMiss()) {
                     printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
                             "Not found string [KickMessages.youBot]"));
-                    captchaService.getMapActions().remove(player.getName());
+                    captchaService.getMapActions().remove(player);
                 }
-
-                captchaService.getMapActions().put(player.getName(), captchaModel);
-            } else {
-                printMessage.kickMessage(player, fileMessages.getMSG().getString("KickMessages.youBot",
-                        "Not found string [KickMessages.youBot]"));
-                captchaService.getMapActions().remove(player.getName());
             }
         }
     }

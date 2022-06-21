@@ -74,14 +74,13 @@ public class PlayerService {
             if (player.isOnline()) {
                 if (result.isPresent()) {
                     if (result.get().getPlayerAuth().getIpLogin().equals(player.getAddress().getHostName())) {
-                       if (timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() <=
+                        captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
+                        if (timeSession > 0 && result.get().getPlayerAuth().getLastLogin().getTime() <=
                                 new Date().getTime() - timeSession * 1000L) {
-                            captchaService.setTypeCaptcha(player, TypeCaptcha.NONE);
                             loginTimer.regTimer(player);
                             printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.login"));
                         } else {
                             printMessage.sendMessage(player, fileMessages.getMSG().getStringList("AutoMessages.sessionSuccess"));
-                            playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {

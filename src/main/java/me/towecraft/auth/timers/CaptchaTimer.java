@@ -1,6 +1,7 @@
 package me.towecraft.auth.timers;
 
 import me.towecraft.auth.TAS;
+import me.towecraft.auth.listeners.captcha.TypeCaptcha;
 import me.towecraft.auth.service.CaptchaService;
 import me.towecraft.auth.utils.FileMessages;
 import me.towecraft.auth.service.PrintMessageService;
@@ -39,13 +40,14 @@ public class CaptchaTimer /*implements TimerKick*/ {
         this.time = plugin.getConfig().getInt("Captcha.timeKick", 10); //Sec
     }
 
-//    @Override
+    //    @Override
     public void regTimer(Player player) {
         this.timers.put(player, new BukkitRunnable() {
             @Override
             public void run() {
                 if (timers.containsKey(player)) {
                     if (captchaService.getMapActions().get(player.getName()) != null &&
+                            captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE &&
                             captchaService.getMapActions().get(player.getName()).getCountDoneClick() < 3) {
                         captchaService.getMapActions().remove(player.getName());
                         removeTimer(player);
@@ -69,7 +71,7 @@ public class CaptchaTimer /*implements TimerKick*/ {
         timeLevels.put(player, timeLevel);
     }
 
-//    @Override
+    //    @Override
     public void removeTimer(Player player) {
         if (timers.containsKey(player)) {
             timers.get(player).cancel();
