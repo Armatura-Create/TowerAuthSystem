@@ -88,7 +88,7 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                                 recoveryTimer.removeTimer(player);
                                 connectionService.connect(player,
                                         plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                        TypeConnect.MIN);
+                                        TypeConnect.MIN, 0);
                             } else {
                                 logger.log("Error login");
                                 printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",

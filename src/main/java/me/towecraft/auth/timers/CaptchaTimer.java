@@ -46,10 +46,10 @@ public class CaptchaTimer /*implements TimerKick*/ {
             @Override
             public void run() {
                 if (timers.containsKey(player)) {
-                    if (captchaService.getMapActions().get(player.getName()) != null &&
+                    if (captchaService.getMapActions().get(player) != null &&
                             captchaService.getTypeCaptcha(player) != TypeCaptcha.NONE &&
-                            captchaService.getMapActions().get(player.getName()).getCountDoneClick() < 3) {
-                        captchaService.getMapActions().remove(player.getName());
+                            captchaService.getMapActions().get(player).getCountDoneClick() < 3) {
+                        captchaService.getMapActions().remove(player);
                         removeTimer(player);
                         if (player.isOnline())
                             printMessage.kickMessage(player.getPlayer(), fileMessages.getMSG().getString("KickMessages.youBot",

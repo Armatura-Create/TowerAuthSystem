@@ -84,7 +84,7 @@ public class PlayerService {
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    connectionService.connect(player, serverConnect, TypeConnect.MIN);
+                                    connectionService.connect(player, serverConnect, TypeConnect.MIN, 0);
                                     playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
                                     loginTimer.removeTimer(player);
                                 }

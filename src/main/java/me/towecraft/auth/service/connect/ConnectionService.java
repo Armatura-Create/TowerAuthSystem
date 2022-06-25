@@ -11,6 +11,7 @@ import me.towecraft.auth.utils.PluginLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import unsave.plugin.context.annotations.Autowire;
+import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -38,7 +39,14 @@ public class ConnectionService {
     @Autowire
     private PrintMessageService printMessage;
 
-    public void connect(Player player, String pieceTypeServer, TypeConnect typeConnect) {
+    private int countRetryReconnect;
+
+    @PostConstruct
+    private void init() {
+        countRetryReconnect = plugin.getConfig().getInt("General.countRetryConnect", 10);
+    }
+
+    public void connect(Player player, String pieceTypeServer, TypeConnect typeConnect, int nowReconnect) {
 
         List<ServerModel> servers = new ArrayList<>(serversUpdateHandler.getServers());
 
@@ -49,9 +57,21 @@ public class ConnectionService {
                 .sorted(Comparator.comparing(ServerModel::getNowPlayer))
                 .collect(Collectors.toList());
 
-        if (servers.size() < 1)
-            printMessage.sendMessage(player, fileMessages.getMSG().getString("GUI.main.wrongArgumentConnect",
-                    "String not found (GUI.main.wrongArgumentConnect)"));
+        if (servers.size() < 1) {
+            printMessage.sendMessage(player, fileMessages.getMSG().getString("Connect.tryReconnect",
+                    "String not found [Connect.tryReconnect] in Message.yml")
+                    .replace("%now%", nowReconnect + "")
+                    .replace("%all%", countRetryReconnect + "")
+            );
+            try {
+                Thread.sleep(10_000L); //10 Sec
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (nowReconnect < countRetryReconnect)
+                connect(player, pieceTypeServer, typeConnect, ++nowReconnect);
+        }
 
         switch (typeConnect) {
             case RANDOM:
@@ -67,7 +87,8 @@ public class ConnectionService {
 
             if (nameServerService.getNameServer().equalsIgnoreCase(servers.get(0).getName())) {
                 player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&',
-                        fileMessages.getMSG().getString("GUI.main.areYouHere", "String not found (GUI.main.areYouHere)")) + "§a" + pieceTypeServer);
+                        fileMessages.getMSG().getString("Connect.areYouHere",
+                                "String not found [Connect.areYouHere] in Message.yml")) + "§a" + pieceTypeServer);
                 return;
             }
 
@@ -83,5 +104,4 @@ public class ConnectionService {
             player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
         }
     }
-
 }

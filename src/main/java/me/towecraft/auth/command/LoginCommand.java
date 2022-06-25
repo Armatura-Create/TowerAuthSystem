@@ -79,7 +79,7 @@ public class LoginCommand implements CommandExecutor {
                                             loginTimer.removeTimer(player);
                                             connectionService.connect(player,
                                                     plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                                    TypeConnect.MIN);
+                                                    TypeConnect.MIN, 0);
                                             captchaService.removeTypeCaptcha(player);
                                         } else {
                                             logger.log("Error login");

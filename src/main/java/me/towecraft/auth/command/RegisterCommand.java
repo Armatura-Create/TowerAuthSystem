@@ -137,7 +137,7 @@ public class RegisterCommand implements CommandExecutor {
                                 public void run() {
                                     connectionService.connect(player,
                                             plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                            TypeConnect.MIN);
+                                            TypeConnect.MIN, 0);
                                 }
                             }.runTaskLater(plugin, 20L);
 

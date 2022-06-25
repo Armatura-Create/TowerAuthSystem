@@ -1,5 +1,6 @@
 General:
   nextConnect: Hub #Name server to connect when success login/registration
+  countRetryConnect: 10 #Conut try to connect to next server if server not found or restart
   timeSessions: 0 #Autologin when reconnect (In sec). If 0 - equals for ip last connect
   timeLogin: 30 #If user not login in this time - kick him (In sec)
   timeReg: 30 #If user not registration in this time - kick him (In sec)

@@ -8,4 +8,14 @@ import lombok.experimental.Accessors;
 public class CaptchaModel {
     private int countMissClick;
     private int countDoneClick;
+
+    public CaptchaModel incrementMiss() {
+        countMissClick++;
+        return this;
+    }
+
+    public CaptchaModel incrementDone() {
+        countDoneClick++;
+        return this;
+    }
 }

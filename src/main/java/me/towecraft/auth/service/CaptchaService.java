@@ -142,8 +142,7 @@ public class CaptchaService {
         if (captchaModel == null)
             mapActions.put(player, new CaptchaModel().setCountDoneClick(1));
         else {
-            captchaModel.setCountDoneClick(captchaModel.getCountDoneClick() + 1);
-            mapActions.put(player, captchaModel);
+            mapActions.put(player, captchaModel.incrementDone());
         }
     }
 
@@ -152,8 +151,7 @@ public class CaptchaService {
         if (captchaModel == null)
             mapActions.put(player, new CaptchaModel().setCountMissClick(1));
         else {
-            captchaModel.setCountDoneClick(captchaModel.getCountMissClick() + 1);
-            mapActions.put(player, captchaModel);
+            mapActions.put(player, captchaModel.incrementMiss());
         }
     }
 }
