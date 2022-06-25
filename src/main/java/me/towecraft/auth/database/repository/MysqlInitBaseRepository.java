@@ -23,7 +23,7 @@ public class MysqlInitBaseRepository implements InitBaseRepository {
     @Override
     public void initAuthPlayersTable() {
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS auth_data (" +
-                "player_uuid CHAR(36) NOT NULL PRIMARY KEY REFERENCES players(uuid)," +
+                "uuid CHAR(36) NOT NULL PRIMARY KEY REFERENCES players(uuid)," +
                 "login_ip VARCHAR(15) NOT NULL," +
                 "reg_ip VARCHAR(15) NOT NULL," +
                 "last_login BIGINT(20) NULL DEFAULT NULL," +

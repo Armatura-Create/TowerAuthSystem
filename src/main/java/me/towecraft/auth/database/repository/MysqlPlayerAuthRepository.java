@@ -22,14 +22,14 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
 
     @Override
     public Optional<PlayerAuthEntity> findByUuid(String uuid) {
-        return jdbcTemplate.queryForObject("SELECT * FROM auth_data WHERE player_uuid = ?;",
+        return jdbcTemplate.queryForObject("SELECT * FROM auth_data WHERE uuid = ?;",
                 new Object[]{uuid}, new PlayerAuthRowMapper()
         );
     }
 
     @Override
     public int save(PlayerAuthEntity playerAuth) {
-        return jdbcTemplate.update("INSERT INTO auth_data (player_uuid, login_ip, reg_ip, time_reg, last_login) VALUES (?, ?, ?, ?, ?);",
+        return jdbcTemplate.update("INSERT INTO auth_data (uuid, login_ip, reg_ip, time_reg, last_login) VALUES (?, ?, ?, ?, ?);",
                 new Object[]{
                         playerAuth.getPlayerUuid().toString(),
                         playerAuth.getIpLogin(),
@@ -44,7 +44,7 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
         new BukkitRunnable() {
             @Override
             public void run() {
-                int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ?, recovery_code = NULL WHERE player_uuid = ?;",
+                int result = jdbcTemplate.update("UPDATE auth_data SET last_login = ?, login_ip = ?, recovery_code = NULL WHERE uuid = ?;",
                         new Object[]{
                                 playerAuth.getLastLogin().getTime(),
                                 playerAuth.getIpLogin(),
@@ -62,16 +62,17 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
         new BukkitRunnable() {
             @Override
             public void run() {
+
+                int result =
+                        jdbcTemplate.update("UPDATE auth_data SET reg_ip = ?, login_ip = ?, time_reg = ?, last_login = ? WHERE uuid = ?;",
+                                new Object[]{
+                                        playerAuth.getIpRegistration(),
+                                        playerAuth.getIpLogin(),
+                                        playerAuth.getTimeRegistration().getTime(),
+                                        playerAuth.getLastLogin().getTime(),
+                                        playerAuth.getPlayerUuid().toString()
+                                });
                 if (callback != null) {
-                    int result =
-                            jdbcTemplate.update("UPDATE auth_data SET reg_ip = ?, login_ip = ?, time_reg = ?, last_login = ? WHERE player_uuid = ?;",
-                                    new Object[]{
-                                            playerAuth.getIpRegistration(),
-                                            playerAuth.getIpLogin(),
-                                            playerAuth.getTimeRegistration().getTime(),
-                                            playerAuth.getLastLogin().getTime(),
-                                            playerAuth.getPlayerUuid().toString()
-                                    });
                     callback.callback(result == 1);
                 }
             }
@@ -80,7 +81,7 @@ public class MysqlPlayerAuthRepository implements PlayerAuthRepository {
 
     @Override
     public void saveRecovery(PlayerAuthEntity playerAuth) {
-        jdbcTemplate.update("UPDATE auth_data SET recovery_code = ? WHERE player_uuid = ?;",
+        jdbcTemplate.update("UPDATE auth_data SET recovery_code = ? WHERE uuid = ?;",
                 new Object[]{
                         playerAuth.getRecoveryCode(),
                         playerAuth.getPlayerUuid().toString()

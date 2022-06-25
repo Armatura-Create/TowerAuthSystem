@@ -30,7 +30,7 @@ public class MysqlPlayerRepository implements PlayerRepository {
             @Override
             public void run() {
 
-                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE player_uuid = ?;", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
+                Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE uuid = ?;", new Object[]{uuid.toString()}, new PlayerRowMapper<>(playerAuthRepository));
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
@@ -49,6 +49,23 @@ public class MysqlPlayerRepository implements PlayerRepository {
 
                 if (callback != null) {
                     callback.callback(playerAuthEntity);
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    @Override
+    public void findByEmail(String email, MysqlCallback<Boolean> callback) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (email == null && callback != null) callback.callback(false);
+                else {
+                    Optional<PlayerEntity> playerAuthEntity = jdbcTemplate.queryForObject("SELECT * FROM players WHERE email = ?;", new Object[]{email}, new PlayerRowMapper<>(playerAuthRepository));
+
+                    if (callback != null) {
+                        callback.callback(playerAuthEntity.isPresent());
+                    }
                 }
             }
         }.runTaskAsynchronously(plugin);

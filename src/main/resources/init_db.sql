@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS players
 );
 
 CREATE TABLE IF NOT EXISTS auth_data (
-    player_uuid CHAR(36) NOT NULL REFERENCES players(uuid),
+    uuid CHAR(36) NOT NULL REFERENCES players(uuid),
     login_ip VARCHAR(15) NOT NULL,
     reg_ip VARCHAR(15) NOT NULL,
     last_login BIGINT(20) NULL DEFAULT NULL,

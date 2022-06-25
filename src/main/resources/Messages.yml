@@ -83,6 +83,7 @@ Commands:
     lengthPassword: 'Пароль должен быть не менее %min% и не более %max% символов'
     bannedPassword: '§fТакой пароль нельзя использовать!'
     wrongEmail: '§fВаш email не соответствует шаблону §e(Example@gmail.com)!'
+    emailExist: '§fEmail уже занят'
     successRegister: '§fВы успешно зарегистрировались'
   login:
     wrongPassword: 'Неправильный пароль. Восстановите его на сайте!'

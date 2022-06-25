@@ -83,8 +83,8 @@ public class LoginCommand implements CommandExecutor {
                                             captchaService.removeTypeCaptcha(player);
                                         } else {
                                             logger.log("Error login");
-                                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
-                                                    "Not found string [Commands.recovery.error] in Message.yml"));
+                                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",
+                                                    "Not found string [Commands.error] in Message.yml"));
                                         }
                                     });
                                 } else

@@ -103,8 +103,8 @@ public class RecoveryService {
 
                 if (!form.exists()) {
                     logger.log("Not found form.html");
-                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
-                            "Not found string [Commands.recovery.error] in Message.yml"));
+                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",
+                            "Not found string [Commands.error] in Message.yml"));
                     getItem(player);
                     return;
                 }
@@ -126,8 +126,8 @@ public class RecoveryService {
                     recoveryTimer.regTimer(player);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
-                            "Not found string [Commands.recovery.error] in Message.yml"));
+                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",
+                            "Not found string [Commands.error] in Message.yml"));
                     getItem(player);
                 }
             } else {

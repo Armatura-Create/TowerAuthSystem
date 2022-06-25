@@ -1,6 +1,7 @@
 package me.towecraft.auth.command;
 
 import me.towecraft.auth.TAS;
+import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.service.connect.ConnectionService;
 import me.towecraft.auth.service.connect.TypeConnect;
 import me.towecraft.auth.timers.RegisterTimer;
@@ -126,25 +127,32 @@ public class RegisterCommand implements CommandExecutor {
                             .setUsername(player.getName())
                             .setUuid(player.getUniqueId());
 
-                    playerRepository.save(playerEntity, isReg -> {
-                        if (isReg) {
-                            printMessage.sendMessage(player,
-                                    fileMessages.getMSG().getString("Commands.register.successRegister",
-                                            "Not found [Commands.register.successRegister] in Message.yml"));
-                            registerTimer.removeTimer(player);
-                            new BukkitRunnable() {
-                                @Override
-                                public void run() {
-                                    connectionService.connect(player,
-                                            plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                            TypeConnect.MIN, 0);
-                                }
-                            }.runTaskLater(plugin, 20L);
+                    playerRepository.findByEmail(email, exist -> {
+                        if (!exist) {
+                            playerRepository.save(playerEntity, isReg -> {
+                                if (isReg) {
+                                    printMessage.sendMessage(player,
+                                            fileMessages.getMSG().getString("Commands.register.successRegister",
+                                                    "Not found [Commands.register.successRegister] in Message.yml"));
+                                    registerTimer.removeTimer(player);
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            connectionService.connect(player,
+                                                    plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                                    TypeConnect.MIN, 0);
+                                        }
+                                    }.runTaskLater(plugin, 20L);
 
+                                } else {
+                                    logger.log("Error registration");
+                                    printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",
+                                            "Not found string [Commands.error] in Message.yml"));
+                                }
+                            });
                         } else {
-                            logger.log("Error registration");
-                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.error",
-                                    "Not found string [Commands.recovery.error] in Message.yml"));
+                            printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.register.emailExist",
+                                    "Not found string [Commands.register.emailExist] in Message.yml"));
                         }
                     });
                 }

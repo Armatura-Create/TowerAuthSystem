@@ -14,4 +14,6 @@ public interface PlayerRepository {
     void save(PlayerEntity player, MysqlCallback<Boolean> callback);
 
     void savePassword(PlayerEntity player);
+
+    void findByEmail(String email, MysqlCallback<Boolean> callback);
 }
