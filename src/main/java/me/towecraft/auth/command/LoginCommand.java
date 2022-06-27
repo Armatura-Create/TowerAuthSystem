@@ -9,7 +9,6 @@ import me.towecraft.auth.utils.FileMessages;
 import me.towecraft.auth.utils.HashUtil;
 import me.towecraft.auth.utils.PluginLogger;
 import me.towecraft.auth.service.PrintMessageService;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.database.repository.PlayerRepository;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,9 +32,6 @@ public class LoginCommand implements CommandExecutor {
     private PlayerRepository playerRepository;
 
     @Autowire
-    private PlayerAuthRepository playerAuthRepository;
-
-    @Autowire
     private ConnectionService connectionService;
     @Autowire
     private CaptchaService captchaService;
@@ -51,10 +47,17 @@ public class LoginCommand implements CommandExecutor {
     @Autowire
     private PluginLogger logger;
 
+    private String nextConnect;
+
     @PostConstruct
     private void init() {
         plugin.getCommand("l").setExecutor(this);
         plugin.getCommand("login").setExecutor(this);
+
+        nextConnect = plugin.getConfig().getString("General.nextConnect");
+
+        if (nextConnect == null)
+            throw new RuntimeException("Not found next connect server [General.nextConnect] in config.yml");
     }
 
     @Override
@@ -72,13 +75,15 @@ public class LoginCommand implements CommandExecutor {
                                     printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.login.successLogin",
                                             "Not found string [Commands.login.successLogin]"));
 
-                                    playerAuthRepository.saveLogin(result.get().getPlayerAuth()
+                                    result.get().getPlayerAuth()
                                             .setLastLogin(new Date())
-                                            .setIpLogin(player.getAddress().getHostName()), isLogin -> {
+                                            .setIpLogin(player.getAddress().getHostName());
+
+                                    playerRepository.save(result.get(), isLogin -> {
                                         if (isLogin) {
                                             loginTimer.removeTimer(player);
                                             connectionService.connect(player,
-                                                    plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                                    nextConnect,
                                                     TypeConnect.MIN, 0);
                                             captchaService.removeTypeCaptcha(player);
                                         } else {

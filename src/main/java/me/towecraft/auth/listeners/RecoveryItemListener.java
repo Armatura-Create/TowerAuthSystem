@@ -1,9 +1,8 @@
 package me.towecraft.auth.listeners;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.service.RecoveryService;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.database.repository.PlayerRepository;
+import me.towecraft.auth.service.RecoveryService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,9 +27,6 @@ public class RecoveryItemListener implements Listener {
 
     @Autowire
     private PlayerRepository playerRepository;
-
-    @Autowire
-    private PlayerAuthRepository playerAuthRepository;
 
     @PostConstruct
     private void init() {

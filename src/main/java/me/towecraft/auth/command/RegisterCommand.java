@@ -1,7 +1,6 @@
 package me.towecraft.auth.command;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.service.connect.ConnectionService;
 import me.towecraft.auth.service.connect.TypeConnect;
 import me.towecraft.auth.timers.RegisterTimer;
@@ -71,7 +70,7 @@ public class RegisterCommand implements CommandExecutor {
 
             Player player = ((Player) sender).getPlayer();
 
-            playerRepository.findByUsername(sender.getName(), result -> {
+            playerRepository.findByUsername(player.getName(), result -> {
                 if (result.isPresent()) {
                     printMessage.sendMessage(player,
                             fileMessages.getMSG().getString("Commands.register.existPlayer",
@@ -128,7 +127,7 @@ public class RegisterCommand implements CommandExecutor {
                             .setUuid(player.getUniqueId());
 
                     playerRepository.findByEmail(email, exist -> {
-                        if (!exist) {
+                        if (exist) {
                             playerRepository.save(playerEntity, isReg -> {
                                 if (isReg) {
                                     printMessage.sendMessage(player,

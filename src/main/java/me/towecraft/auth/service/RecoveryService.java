@@ -1,7 +1,6 @@
 package me.towecraft.auth.service;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.database.repository.PlayerRepository;
 import me.towecraft.auth.timers.LoginTimer;
 import me.towecraft.auth.timers.RecoveryTimer;
@@ -37,9 +36,6 @@ public class RecoveryService {
 
     @Autowire
     private PlayerRepository playerRepository;
-
-    @Autowire
-    private PlayerAuthRepository playerAuthRepository;
 
     @Autowire
     private PrintMessageService printMessage;
@@ -98,7 +94,7 @@ public class RecoveryService {
             if (p.getPlayerAuth().getRecoveryCode() == null) {
                 String code = getRandomCode();
                 p.getPlayerAuth().setRecoveryCode(code);
-                playerAuthRepository.saveRecovery(p.getPlayerAuth());
+                playerRepository.save(p, null);
                 File form = fileMessages.getFormRecovery();
 
                 if (!form.exists()) {

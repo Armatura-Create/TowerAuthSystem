@@ -16,7 +16,8 @@ Captcha:
   nameSuccessItem: §aВыполнено
 
 Database:
-  host: 127.0.0.1
+  enable: false
+  host: hostName
   port: 3306
   database: nameBase
   ssl: false
@@ -26,6 +27,10 @@ Database:
     minConnections: 10
     maxConnections: 100
     timeout: 30 #In sec
+
+Retrofit:
+  enable: true
+  baseUrl: http://localhost
 
 SMTP:
   enable: true

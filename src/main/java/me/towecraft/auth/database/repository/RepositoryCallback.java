@@ -1,6 +1,6 @@
 package me.towecraft.auth.database.repository;
 
-public interface MysqlCallback<T> {
+public interface RepositoryCallback<T> {
 
     void callback(T result);
 

@@ -1,9 +1,7 @@
 package me.towecraft.auth.service;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.database.repository.PlayerRepository;
-import me.towecraft.auth.listeners.captcha.CaptchaModel;
 import me.towecraft.auth.listeners.captcha.TypeCaptcha;
 import me.towecraft.auth.service.connect.ConnectionService;
 import me.towecraft.auth.service.connect.TypeConnect;
@@ -30,9 +28,6 @@ public class PlayerService {
 
     @Autowire
     private PlayerRepository playerRepository;
-
-    @Autowire
-    private PlayerAuthRepository playerAuthRepository;
 
     @Autowire
     private CaptchaService captchaService;
@@ -85,7 +80,8 @@ public class PlayerService {
                                 @Override
                                 public void run() {
                                     connectionService.connect(player, serverConnect, TypeConnect.MIN, 0);
-                                    playerAuthRepository.saveLogin(result.get().getPlayerAuth().setLastLogin(new Date()), null);
+                                    result.get().getPlayerAuth().setLastLogin(new Date());
+                                    playerRepository.save(result.get(), null);
                                     loginTimer.removeTimer(player);
                                 }
                             }.runTaskLater(plugin, 20L);

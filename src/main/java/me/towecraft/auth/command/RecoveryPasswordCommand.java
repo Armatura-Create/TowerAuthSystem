@@ -1,12 +1,8 @@
 package me.towecraft.auth.command;
 
 import me.towecraft.auth.TAS;
-import me.towecraft.auth.database.entity.PlayerEntity;
-import me.towecraft.auth.database.repository.MysqlCallback;
-import me.towecraft.auth.database.repository.PlayerAuthRepository;
 import me.towecraft.auth.database.repository.PlayerRepository;
 import me.towecraft.auth.service.PrintMessageService;
-import me.towecraft.auth.service.RecoveryService;
 import me.towecraft.auth.service.connect.ConnectionService;
 import me.towecraft.auth.service.connect.TypeConnect;
 import me.towecraft.auth.timers.RecoveryTimer;
@@ -22,7 +18,6 @@ import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Component
 public class RecoveryPasswordCommand implements CommandExecutor {
@@ -41,9 +36,6 @@ public class RecoveryPasswordCommand implements CommandExecutor {
 
     @Autowire
     private PlayerRepository playerRepository;
-
-    @Autowire
-    private PlayerAuthRepository playerAuthRepository;
 
     @Autowire
     private ConnectionService connectionService;
@@ -81,9 +73,12 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                     if (p.getPlayerAuth().getRecoveryCode().equals(args[0])) {
                         p.setPassword(hashUtil.toHash(args[1]));
                         playerRepository.savePassword(p);
-                        playerAuthRepository.saveLogin(p.getPlayerAuth()
+
+                        p.getPlayerAuth()
                                 .setRecoveryCode(null)
-                                .setLastLogin(new Date()), isLogin -> {
+                                .setLastLogin(new Date());
+
+                        playerRepository.save(p, isLogin -> {
                             if (isLogin) {
                                 recoveryTimer.removeTimer(player);
                                 connectionService.connect(player,

@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public interface PlayerRepository {
 
-    void findByUuid(UUID uuid, MysqlCallback<Optional<PlayerEntity>> callback);
+    void findByUuid(UUID uuid, RepositoryCallback<Optional<PlayerEntity>> callback);
 
-    void findByUsername(String username, MysqlCallback<Optional<PlayerEntity>> callback);
+    void findByUsername(String username, RepositoryCallback<Optional<PlayerEntity>> callback);
 
-    void save(PlayerEntity player, MysqlCallback<Boolean> callback);
+    void save(PlayerEntity player, RepositoryCallback<Boolean> callback);
 
     void savePassword(PlayerEntity player);
 
-    void findByEmail(String email, MysqlCallback<Boolean> callback);
+    void findByEmail(String email, RepositoryCallback<Boolean> callback);
 }
