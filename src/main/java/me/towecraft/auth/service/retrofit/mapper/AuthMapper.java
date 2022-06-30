@@ -4,7 +4,6 @@ import me.towecraft.auth.database.entity.PlayerAuthEntity;
 import me.towecraft.auth.service.retrofit.dto.AuthDTO;
 import unsave.plugin.context.annotations.Component;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,20 +13,20 @@ public class AuthMapper {
     AuthDTO toDTO(PlayerAuthEntity entity) {
         return new AuthDTO()
                 .setUuid(entity.getPlayerUuid().toString())
-                .setLastLogin(BigInteger.valueOf(entity.getLastLogin().getTime()))
+                .setLastLogin(entity.getLastLogin().getTime())
                 .setLoginIP(entity.getIpLogin())
                 .setRegIP(entity.getIpRegistration())
                 .setRecoveryCode(entity.getRecoveryCode())
-                .setTimeReg(BigInteger.valueOf(entity.getTimeRegistration().getTime()));
+                .setTimeReg(entity.getTimeRegistration().getTime());
     }
 
     PlayerAuthEntity toEntity(AuthDTO dto) {
         return new PlayerAuthEntity()
-                .setLastLogin(new Date(dto.getLastLogin().longValue()))
+                .setLastLogin(new Date(dto.getLastLogin()))
                 .setIpLogin(dto.getLoginIP())
                 .setIpRegistration(dto.getRegIP())
                 .setPlayerUuid(UUID.fromString(dto.getUuid()))
-                .setTimeRegistration(new Date(dto.getTimeReg().longValue()))
+                .setTimeRegistration(new Date(dto.getTimeReg()))
                 .setRecoveryCode(dto.getRecoveryCode());
     }
 

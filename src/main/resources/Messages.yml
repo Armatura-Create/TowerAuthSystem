@@ -94,6 +94,7 @@ Commands:
     alreadySendCode: 'Вам уже отправлен код'
     wrongArgs: 'Ошибка в команде §a/password(/pass) §8[§eКОД§8]§a §8[§eновый пароль§8]'
     wrongCode: 'Неверный код'
+    success: 'Пароль успешно изменен'
   error: 'Ошибка отправки - обратитесь к администратору'
 
 Connect:

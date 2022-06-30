@@ -81,11 +81,16 @@ public class LoginCommand implements CommandExecutor {
 
                                     playerRepository.save(result.get(), isLogin -> {
                                         if (isLogin) {
-                                            loginTimer.removeTimer(player);
-                                            connectionService.connect(player,
-                                                    nextConnect,
-                                                    TypeConnect.MIN, 0);
-                                            captchaService.removeTypeCaptcha(player);
+                                            new BukkitRunnable() {
+                                                @Override
+                                                public void run() {
+                                                    loginTimer.removeTimer(player);
+                                                    connectionService.connect(player,
+                                                            nextConnect,
+                                                            TypeConnect.MIN, 0);
+                                                    captchaService.removeTypeCaptcha(player);
+                                                }
+                                            }.runTaskLater(plugin, 20L);
                                         } else {
                                             logger.log("Error login");
                                             printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",

@@ -13,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.Component;
 import unsave.plugin.context.annotations.PostConstruct;
@@ -81,9 +82,16 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                         playerRepository.save(p, isLogin -> {
                             if (isLogin) {
                                 recoveryTimer.removeTimer(player);
-                                connectionService.connect(player,
-                                        plugin.getConfig().getString("General.nextConnect", "Hub"),
-                                        TypeConnect.MIN, 0);
+                                printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.success",
+                                        "Not found string [Commands.recovery.success] in Message.yml"));
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        connectionService.connect(player,
+                                                plugin.getConfig().getString("General.nextConnect", "Hub"),
+                                                TypeConnect.MIN, 0);
+                                    }
+                                }.runTaskLater(plugin, 20L);
                             } else {
                                 logger.log("Error login");
                                 printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.error",

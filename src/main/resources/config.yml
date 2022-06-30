@@ -30,7 +30,7 @@ Database:
 
 Retrofit:
   enable: true
-  baseUrl: http://localhost
+  baseUrl: localhost:80
 
 SMTP:
   enable: true

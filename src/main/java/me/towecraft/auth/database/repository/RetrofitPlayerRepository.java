@@ -9,10 +9,12 @@ import me.towecraft.auth.utils.PluginLogger;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import unsave.plugin.context.annotations.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 @RequiredArgsConstructor
 public class RetrofitPlayerRepository implements PlayerRepository {
 
@@ -26,7 +28,7 @@ public class RetrofitPlayerRepository implements PlayerRepository {
         retrofitClient.api.getPlayerByUuid(new PlayerDTO().setUuid(uuid.toString())).enqueue(new Callback<PlayerDTO>() {
             @Override
             public void onResponse(Call<PlayerDTO> call, Response<PlayerDTO> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     if (callback != null) {
                         callback.callback(Optional.of(playerMapper.toEntity(response.body())));
                     }
@@ -51,7 +53,7 @@ public class RetrofitPlayerRepository implements PlayerRepository {
         retrofitClient.api.getPlayerByName(new PlayerDTO().setName(username)).enqueue(new Callback<PlayerDTO>() {
             @Override
             public void onResponse(Call<PlayerDTO> call, Response<PlayerDTO> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     if (callback != null) {
                         callback.callback(Optional.of(playerMapper.toEntity(response.body())));
                     }
@@ -67,6 +69,7 @@ public class RetrofitPlayerRepository implements PlayerRepository {
                 if (callback != null) {
                     callback.callback(Optional.empty());
                 }
+                throwable.printStackTrace();
             }
         });
     }
@@ -92,6 +95,7 @@ public class RetrofitPlayerRepository implements PlayerRepository {
                 if (callback != null) {
                     callback.callback(false);
                 }
+                throwable.printStackTrace();
             }
         });
     }
@@ -133,7 +137,6 @@ public class RetrofitPlayerRepository implements PlayerRepository {
                 if (callback != null) {
                     callback.callback(false);
                 }
-
                 throwable.printStackTrace();
             }
         });

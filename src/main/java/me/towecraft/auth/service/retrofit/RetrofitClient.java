@@ -1,10 +1,8 @@
 package me.towecraft.auth.service.retrofit;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import me.towecraft.auth.TAS;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
@@ -25,11 +23,9 @@ public class RetrofitClient {
             if (url == null)
                 throw new RuntimeException(new Exception("Not found url [Retrofit.baseUrl] in config.yml"));
 
-            Gson gson = new GsonBuilder().create();
-
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(url)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .addConverterFactory(JacksonConverterFactory.create())
                     .build();
 
             api = retrofit.create(RetrofitApi.class);

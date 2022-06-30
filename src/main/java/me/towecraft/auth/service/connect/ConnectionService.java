@@ -10,6 +10,7 @@ import me.towecraft.auth.service.PrintMessageService;
 import me.towecraft.auth.utils.PluginLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
@@ -47,6 +48,8 @@ public class ConnectionService {
     }
 
     public void connect(Player player, String pieceTypeServer, TypeConnect typeConnect, int nowReconnect) {
+        if (!player.isOnline())
+            return;
 
         List<ServerModel> servers = new ArrayList<>(serversUpdateHandler.getServers());
 
@@ -63,14 +66,15 @@ public class ConnectionService {
                     .replace("%now%", nowReconnect + "")
                     .replace("%all%", countRetryReconnect + "")
             );
-            try {
-                Thread.sleep(10_000L); //10 Sec
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            if (nowReconnect < countRetryReconnect)
-                connect(player, pieceTypeServer, typeConnect, ++nowReconnect);
+            final int finalNowReconnect = nowReconnect;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (finalNowReconnect < countRetryReconnect)
+                        connect(player, pieceTypeServer, typeConnect, finalNowReconnect + 1);
+                }
+            }.runTaskLater(plugin, 200L);
         }
 
         switch (typeConnect) {

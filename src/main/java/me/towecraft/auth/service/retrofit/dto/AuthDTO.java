@@ -12,8 +12,8 @@ public class AuthDTO {
     private String uuid;
     private String loginIP;
     private String regIP;
-    private BigInteger lastLogin;
-    private BigInteger timeReg;
+    private Long lastLogin;
+    private Long timeReg;
     private String recoveryCode;
 
 }

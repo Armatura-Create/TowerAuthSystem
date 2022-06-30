@@ -131,6 +131,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--Plugin Context-->
         <dependency>
             <groupId>unsave.plugin.context</groupId>
             <artifactId>PluginContext</artifactId>
@@ -155,10 +156,9 @@
             <artifactId>retrofit</artifactId>
             <version>2.9.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
+            <artifactId>converter-jackson</artifactId>
             <version>2.9.0</version>
         </dependency>
     </dependencies>
