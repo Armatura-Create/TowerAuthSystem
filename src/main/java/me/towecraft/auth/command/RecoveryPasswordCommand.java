@@ -78,6 +78,11 @@ public class RecoveryPasswordCommand implements CommandExecutor {
                     }
                 }
                 playerRepository.findByUsername(player.getName(), result -> result.ifPresent(p -> {
+                    if (p.getEmail() == null || p.getEmail().isEmpty()) {
+                        printMessage.sendMessage(player, fileMessages.getMSG().getString("Commands.recovery.emailNotFound",
+                                "Not found string [Commands.recovery.emailNotFound] in Message.yml"));
+                        return;
+                    }
                     if (p.getPlayerAuth().getRecoveryCode().equals(args[0])) {
                         p.setPassword(hashUtil.toHash(args[1]));
                         playerRepository.savePassword(p);

@@ -10,6 +10,7 @@ import me.towecraft.auth.service.PrintMessageService;
 import me.towecraft.auth.utils.PluginLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import unsave.plugin.context.annotations.Autowire;
 import unsave.plugin.context.annotations.PostConstruct;
 import unsave.plugin.context.annotations.Service;
@@ -59,18 +60,23 @@ public class ConnectionService {
 
         if (servers.size() < 1) {
             printMessage.sendMessage(player, fileMessages.getMSG().getString("Connect.tryReconnect",
-                    "String not found [Connect.tryReconnect] in Message.yml")
+                            "String not found [Connect.tryReconnect] in Message.yml")
                     .replace("%now%", nowReconnect + "")
                     .replace("%all%", countRetryReconnect + "")
             );
-            try {
-                Thread.sleep(10_000L); //10 Sec
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
             if (nowReconnect < countRetryReconnect)
-                connect(player, pieceTypeServer, typeConnect, ++nowReconnect);
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        connect(player, pieceTypeServer, typeConnect, nowReconnect + 1);
+                    }
+                }.runTaskLater(plugin, 10_000);
+            else {
+                printMessage.sendMessage(player, fileMessages.getMSG().getString("Connect.notFoundOnlineNextServer",
+                        "String not found [Connect.notFoundOnlineNextServer] in Message.yml"));
+            }
         }
 
         switch (typeConnect) {
@@ -84,7 +90,6 @@ public class ConnectionService {
         }
 
         if (servers.size() > 0) {
-
             if (nameServerService.getNameServer().equalsIgnoreCase(servers.get(0).getName())) {
                 player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&',
                         fileMessages.getMSG().getString("Connect.areYouHere",

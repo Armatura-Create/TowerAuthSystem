@@ -28,23 +28,16 @@ public class PluginConfig {
         long timeout = plugin.getConfig().getLong("Database.timeout", 30) * 1000;
 
         String user = plugin.getConfig().getString("Database.user");
-        if (user == null) try {
-            throw new Exception("Not found user in config.yml [Database.user]");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        if (user == null)
+            throw new RuntimeException("Not found user in config.yml [Database.user]");
+
         String password = plugin.getConfig().getString("Database.password");
-        if (password == null) try {
-            throw new Exception("Not found password in config.yml [Database.password]");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        if (password == null)
+            throw new RuntimeException("Not found password in config.yml [Database.password]");
+
         String database = plugin.getConfig().getString("Database.database");
-        if (database == null) try {
-            throw new Exception("Not found database in config.yml [Database.database]");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        if (database == null)
+            throw new RuntimeException("Not found database in config.yml [Database.database]");
 
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=" + ssl + "&characterEncoding=utf8&useConfigs=maxPerformance&connectionTimeZone=UTC");
